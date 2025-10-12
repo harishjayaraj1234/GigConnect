@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs"
 import jwt from 'jsonwebtoken'
 import userModel from "../models/userModel.js"
 import transporter from "../config/nodemailer.js"
+import { text } from "express"
 
 
 export const register = async(req,res)=>{
@@ -9,7 +10,7 @@ export const register = async(req,res)=>{
     const {name,email,password} = req.body
 
     if(!name || !email || !password){
-        return res.json({sucess:false,message:"Missing Details..."})
+        return res.json({success:false,message:"Missing Details..."})
     }
     try{
         const existingUser = await userModel.findOne({email})
@@ -40,12 +41,11 @@ export const register = async(req,res)=>{
 
         }
          await transporter.sendMail(mailOptions)
-
             return res.json({success:true,message:"User Created Successfully...."})
 
 
     }catch(error){
-        res.json({sucess:false,message:error})
+        res.json({success:false,message:error})
     }
 
 }
@@ -226,7 +226,7 @@ export const sendResetOtp = async(req,res)=>{
         }
       const otp = String(Math.floor(100000 + Math.random()*900000))
       user.resetOtp = otp
-      user.resetOtpExpiresAt = Date.now()+24*60*60*1000
+      user.resetOtpExpireAt = Date.now()+24*60*60*1000
       await user.save()
     
 
@@ -275,14 +275,14 @@ export const resetPassword = async(req,res)=>{
             return res.json({success:false,message:'Invalid OTP...'})
 
         }
-        if(user.resetOtpExpiresAt<Date.now()){
+        if(user.resetOtpExpireAt<Date.now()){
             return res.json({success:false,message:'OTP Expired...'})
 
         }
         const hashedPassword = await bcrypt.hash(newPassword,10)
         user.password = hashedPassword
         user.resetOtp = ''
-        user.resetOtpExpiresAt = 0
+        user.resetOtpExpireAt = 0
 
         try {
             await user.save()
