@@ -54,6 +54,7 @@ export const register = async(req,res)=>{
 
 
 export const login = async(req,res)=>{
+    
     const{email,password} = req.body
 
     if(!email || !password){
@@ -69,7 +70,11 @@ export const login = async(req,res)=>{
             return res.json({success:false,message:"Invalid password..."})
 
         } 
-        const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expireIn:'7d'})
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
 
         res.cookie('token',token, {
             httpOnly:true,
@@ -81,7 +86,7 @@ export const login = async(req,res)=>{
         return res.json({success:true,message:"User LoggedIn...."})
 
     }catch(error){
-        res.json({sucess:false,message:error})
+        res.json({success:false,message:error})
     }
 
 }
@@ -106,38 +111,44 @@ export const logout = async(req,res)=>{
 }
 
 
-
-export const sendVerifyOtp = async()=>{
+    
+export const sendVerifyOtp = async(req, res)=>{
+    
     try{
-
-        const {userId} = req.body
+        
+        const {userId} = req.body       
         const user = await userModel.findById(userId)
         if(user.isAccountVerified){
            return res.json({sucess:false,message:"Account already verified...."})
         }
+        const otp = String(Math.floor(100000 + Math.random()*900000))
+        user.verifyOtp = otp
+        
+        user.verifyOtpExpireAt = Date.now()+24*60*60*1000
+        
+        
+        try {
+            await user.save()
+            console.log(user)
+        } catch (error) {
+           return res.json({sucess:false,error})
+        }
 
-      const otp = String(Math.floor(100000 + Math.random()*900000))
-      user.verifyOtp = otp
-      user.verifyOtpExpireAt = Date.now()+24*60*60*1000
-      await user.save()
+        const mailOption = {
+            from: process.env.SENDER_EMAIL,
+            to:user.email,
+            subject: "Account Verification OTP",
+            text: `Your OTP is ${otp}. Verify your account using this OTP.`
 
-      const mailOption ={
-        from: process.env.SENDER_EMAIL,
-        to:user.email,
-        subject: "Account Verification OTP",
-        text: `Your OTP is ${otp}. Verify your account using this OTP.`
-
-
-      }
+        }
       await transporter.sendMail(mailOption)
       return res.json({sucess:true,message:"Verification OTP Sent on Email...."})
 
 
 
     }catch(error){
-    res.json({sucess:false,message:error})
-
-
+         
+        res.json({sucess:false,message:error})
     }
 }
 
@@ -151,7 +162,6 @@ export const verifyEmail = async(req,res)=>{
     if(!userId || !otp){
         return res.json({sucess:false,message:"Missing Details..."})
 
-       
     }
     try{
         const user = await userModel.findById(userId)
@@ -172,7 +182,7 @@ export const verifyEmail = async(req,res)=>{
         user.verifyOtp = ''
         user.verifyOtpExpireAt = 0
         await user.save()
-        return res.json({sucess:true,message:"Email Verified Successfully.."})
+        return res.json({success:true,message:"Email Verified Successfully.."})
 
 
     }catch(error){
@@ -182,12 +192,11 @@ export const verifyEmail = async(req,res)=>{
 }
 
 
-
-
 //Check if user is authenticated
 
 export const isAuthenticated = async(req,res)=>{
     try{
+ 
         return res.json({success:true})
 
     }catch(error){
@@ -217,8 +226,9 @@ export const sendResetOtp = async(req,res)=>{
         }
       const otp = String(Math.floor(100000 + Math.random()*900000))
       user.resetOtp = otp
-      user.resetOtpExpiresAt = Date.now()+ 15*60*1000
+      user.resetOtpExpiresAt = Date.now()+24*60*60*1000
       await user.save()
+    
 
         const mailOption ={
         from: process.env.SENDER_EMAIL,
@@ -259,13 +269,14 @@ export const resetPassword = async(req,res)=>{
          return res.status({success:false,message:'user not found...'})
 
         }
-        if(user.resetOtp === "" || user.resetOtp !== otp){
+     
+        if(user.resetOtp!=otp){
 
-         return res.status({success:false,message:'Invalid OTP...'})
+            return res.json({success:false,message:'Invalid OTP...'})
 
         }
         if(user.resetOtpExpiresAt<Date.now()){
-         return res.status({success:false,message:'OTP Expired...'})
+            return res.json({success:false,message:'OTP Expired...'})
 
         }
         const hashedPassword = await bcrypt.hash(newPassword,10)
@@ -273,9 +284,13 @@ export const resetPassword = async(req,res)=>{
         user.resetOtp = ''
         user.resetOtpExpiresAt = 0
 
-        await user.save()
+        try {
+            await user.save()
+        } catch (error) {
+            res.json(error)
+        }
 
-         return res.status({success:true,message:'Password has been reset Successfully...'})
+         return res.json({success:true,message:'Password has been reset Successfully...'})
 
 
     }catch(error){

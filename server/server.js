@@ -1,13 +1,14 @@
 import express from "express"
 import cors from "cors"
-import "dotenv"
+import env from "dotenv"
 import cookieParser from "cookie-parser"
 import connectDB from "./config/mongodb.js"
 import authRouter from "./routes/authRoute.js"
 import userRouter from "./routes/userRoutes.js"
 
+env.config()
 const app = express()
-const port = process.env.Port || 4000
+const port = process.env.PORT || 4000
 connectDB()
 
 
