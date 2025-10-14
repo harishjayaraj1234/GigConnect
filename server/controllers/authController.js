@@ -7,9 +7,9 @@ import { text } from "express"
 
 export const register = async(req,res)=>{
 
-    const {name,email,password} = req.body
+    const {name,email,password,role} = req.body
 
-    if(!name || !email || !password){
+    if(!name || !email || !password || !role){
         return res.json({success:false,message:"Missing Details..."})
     }
     try{
@@ -19,10 +19,10 @@ export const register = async(req,res)=>{
         }
         const hashedPassword = await bcrypt.hash(password,10)
 
-        const user = new userModel({name,email,password:hashedPassword})
+        const user = new userModel({name,email,password:hashedPassword,role})
         await user.save()
 
-        const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expireIn:'7d'})
+        const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expiresIn:'7d'})
 
         res.cookie('token',token, {
             httpOnly:true,
@@ -71,7 +71,7 @@ export const login = async(req,res)=>{
 
         } 
         const token = jwt.sign(
-            { id: user._id },
+            { id: user._id,role:user.role },
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -160,7 +160,7 @@ export const verifyEmail = async(req,res)=>{
     const {userId, otp} = req.body
 
     if(!userId || !otp){
-        return res.json({sucess:false,message:"Missing Details..."})
+        return res.json({success:false,message:"Missing Details..."})
 
     }
     try{
@@ -170,7 +170,7 @@ export const verifyEmail = async(req,res)=>{
 
         }
         if(user.verifyOtp === '' || user.verifyOtp !== otp){
-            return res.json({sucess:false,message:"Invalid OTP..."})
+            return res.json({success:false,message:"Invalid OTP..."})
 
 
         }
