@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
 function Register() {
   const [form, setForm] = useState({
@@ -100,7 +101,7 @@ function Register() {
           onChange={handleChange}
           required
         >
-          <option value="user">User</option>
+          <option value="user">Client</option>
           <option value="freelancer">Freelancer</option>
         </select>
 
