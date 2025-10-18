@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../services/api";
+=======
+import axios from "axios";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+>>>>>>> fa39413eb1c7c86805e3c0129f456f951d8d81fd
 
 function Register() {
   const [form, setForm] = useState({
@@ -8,7 +14,11 @@ function Register() {
     email: "",
     password: "",
     confirmPassword: "",
+<<<<<<< HEAD
     role: "user",
+=======
+    role: "Role",
+>>>>>>> fa39413eb1c7c86805e3c0129f456f951d8d81fd
   });
 
   const [message, setMessage] = useState("");
@@ -27,6 +37,7 @@ function Register() {
   };
 
   // handle form submit
+<<<<<<< HEAD
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -34,10 +45,28 @@ function Register() {
       setMessage(
         "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
       );
+=======
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!form.name){
+      setMessage("Enter your Name First!")
+      return;
+    }
+
+    if(!form.email){
+      setMessage("Enter your Email!")
+      return;
+    }
+
+    if (!isStrongPassword(form.password)) {
+      setMessage("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+>>>>>>> fa39413eb1c7c86805e3c0129f456f951d8d81fd
       return;
     }
 
     if (form.password !== form.confirmPassword) {
+<<<<<<< HEAD
       setMessage("Passwords do not match!");
       return;
     }
@@ -48,6 +77,39 @@ function Register() {
 
     // simulate navigation
     setTimeout(() => navigate("/login"), 1500);
+=======
+      setMessage("Passwords not match!");
+      return;
+    }
+
+    if(form.role === "Role"){
+      setMessage("Select your role")
+      return;
+    }
+
+    console.log("Registered User:", form);
+    setMessage("Registration successful! Redirecting to login...");
+
+    try {
+        const response = await axios.post("http://localhost:5000/api/auth/register", form);
+        setMessage(response.data.message);
+
+    } catch (error) {
+
+        if(error.response){
+          setMessage(error.response.data.message);
+        }
+        else if(error.request){
+          setMessage("No response from server. Try again later.");
+        }
+        else{
+          setMessage(error.message)
+        }
+        return;    
+    }
+
+    navigate("/login")
+>>>>>>> fa39413eb1c7c86805e3c0129f456f951d8d81fd
   };
 
   return (
@@ -64,7 +126,11 @@ function Register() {
           placeholder="Name"
           className="w-full p-2 border rounded"
           onChange={handleChange}
+<<<<<<< HEAD
           required
+=======
+   
+>>>>>>> fa39413eb1c7c86805e3c0129f456f951d8d81fd
         />
 
         <input
@@ -73,7 +139,11 @@ function Register() {
           placeholder="Email"
           className="w-full p-2 border rounded"
           onChange={handleChange}
+<<<<<<< HEAD
           required
+=======
+    
+>>>>>>> fa39413eb1c7c86805e3c0129f456f951d8d81fd
         />
 
         <input
@@ -82,7 +152,11 @@ function Register() {
           placeholder="Password"
           className="w-full p-2 border rounded"
           onChange={handleChange}
+<<<<<<< HEAD
           required
+=======
+
+>>>>>>> fa39413eb1c7c86805e3c0129f456f951d8d81fd
         />
 
         <input
@@ -91,17 +165,29 @@ function Register() {
           placeholder="Confirm Password"
           className="w-full p-2 border rounded"
           onChange={handleChange}
+<<<<<<< HEAD
           required
+=======
+
+>>>>>>> fa39413eb1c7c86805e3c0129f456f951d8d81fd
         />
 
         <select
           name="role"
           className="w-full p-2 border rounded"
+<<<<<<< HEAD
           value={form.role}
           onChange={handleChange}
           required
         >
           <option value="user">Client</option>
+=======
+          onChange={handleChange}
+          required
+        >
+          <option selected disabled>Role</option>
+          <option value="user">User</option>
+>>>>>>> fa39413eb1c7c86805e3c0129f456f951d8d81fd
           <option value="freelancer">Freelancer</option>
         </select>
 

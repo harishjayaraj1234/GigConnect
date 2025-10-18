@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs"
 import jwt from 'jsonwebtoken'
 import userModel from "../models/userModel.js"
 import transporter from "../config/nodemailer.js"
-import { text } from "express"
 
 
 export const register = async(req,res)=>{
@@ -10,19 +9,19 @@ export const register = async(req,res)=>{
     const {name,email,password,role} = req.body
 
     if(!name || !email || !password || !role){
-        return res.json({success:false,message:"Missing Details..."})
+        return res.status(400).json({sucess:false,message:"Missing Details..."})
     }
     try{
         const existingUser = await userModel.findOne({email})
         if(existingUser){
-            return res.json({success:false,message:"User already exists..."})
+            return res.status(409).json({success:false,message:"User already exists..."})
         }
         const hashedPassword = await bcrypt.hash(password,10)
 
         const user = new userModel({name,email,password:hashedPassword,role})
         await user.save()
 
-        const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expiresIn:'7d'})
+        const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expireIn:'7d'})
 
         res.cookie('token',token, {
             httpOnly:true,
@@ -41,11 +40,12 @@ export const register = async(req,res)=>{
 
         }
          await transporter.sendMail(mailOptions)
-            return res.json({success:true,message:"User Created Successfully...."})
+
+            return res.status(200).json({success:true,message:"User Created Successfully...."})
 
 
     }catch(error){
-        res.json({success:false,message:error})
+        res.json({sucess:false,message:error})
     }
 
 }
@@ -58,35 +58,36 @@ export const login = async(req,res)=>{
     const{email,password} = req.body
 
     if(!email || !password){
-        return res.json({success:false,message:"Email and Passeord required..."})
+        return res.status(400).json({success:false,message:"Email and Passeord required..."})
     }
     try{
         const user = await userModel.findOne({email})
         if(!user){
-            return res.json({success:false,message:"Invalid email..."})
+            return res.status(404).json({success:false,message:"User not found"})
         }
+
         const isMatch = await bcrypt.compare(password,user.password)
         if(!isMatch){
-            return res.json({success:false,message:"Invalid password..."})
+            return res.status(401).json({success:false,message:"Invalid email or password"})
+        }
 
-        } 
         const token = jwt.sign(
-            { id: user._id,role:user.role },
+            { id: user._id },
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
 
         res.cookie('token',token, {
-            httpOnly:true,
+            httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none':'strict',
             maxAge: 7*24*60*60*1000
              
         })
-        return res.json({success:true,message:"User LoggedIn...."})
+        return res.status(200).json({success:true,message:"User LoggedIn...."}) 
 
     }catch(error){
-        res.json({success:false,message:error})
+        res.status(500).json({success:false,message:"Server error. Please try again later"})
     }
 
 }
@@ -160,7 +161,7 @@ export const verifyEmail = async(req,res)=>{
     const {userId, otp} = req.body
 
     if(!userId || !otp){
-        return res.json({success:false,message:"Missing Details..."})
+        return res.json({sucess:false,message:"Missing Details..."})
 
     }
     try{
@@ -170,7 +171,7 @@ export const verifyEmail = async(req,res)=>{
 
         }
         if(user.verifyOtp === '' || user.verifyOtp !== otp){
-            return res.json({success:false,message:"Invalid OTP..."})
+            return res.json({sucess:false,message:"Invalid OTP..."})
 
 
         }
@@ -226,7 +227,7 @@ export const sendResetOtp = async(req,res)=>{
         }
       const otp = String(Math.floor(100000 + Math.random()*900000))
       user.resetOtp = otp
-      user.resetOtpExpireAt = Date.now()+24*60*60*1000
+      user.resetOtpExpiresAt = Date.now()+24*60*60*1000
       await user.save()
     
 
@@ -275,14 +276,14 @@ export const resetPassword = async(req,res)=>{
             return res.json({success:false,message:'Invalid OTP...'})
 
         }
-        if(user.resetOtpExpireAt<Date.now()){
+        if(user.resetOtpExpiresAt<Date.now()){
             return res.json({success:false,message:'OTP Expired...'})
 
         }
         const hashedPassword = await bcrypt.hash(newPassword,10)
         user.password = hashedPassword
         user.resetOtp = ''
-        user.resetOtpExpireAt = 0
+        user.resetOtpExpiresAt = 0
 
         try {
             await user.save()
