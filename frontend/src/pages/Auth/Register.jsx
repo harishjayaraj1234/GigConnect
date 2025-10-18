@@ -55,12 +55,13 @@ function Register() {
       return;
     }
 
-    console.log("Registered User:", form);
-    setMessage("Registration successful! Redirecting to login...");
+   
 
     try {
-        const response = await axios.post("http://localhost:5000/api/auth/register", form);
-        setMessage(response.data.message);
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, form);
+        if(response.status == 200){
+          setMessage(response.data.message);
+        }
 
     } catch (error) {
 

@@ -37,15 +37,14 @@ export const register = async(req,res)=>{
             to: email,
             subject: "Welcome to gigConnect",
             text: `Welcome to gigConnect. Your acccount has been created with email id: ${email}`
-
         }
-         await transporter.sendMail(mailOptions)
-
-            return res.status(200).json({success:true,message:"User Created Successfully...."})
+        
+        await transporter.sendMail(mailOptions)
+        return res.status(200).json({success:true,message:"User Created Successfully...."})
 
 
     }catch(error){
-        res.json({sucess:false,message:error})
+        // res.status(500).json({success:false,message:"Server error. Please try again later"})
     }
 
 }
@@ -206,46 +205,41 @@ export const isAuthenticated = async(req,res)=>{
 }
 
 
-
-
-
-
 // send password reset otp
 
 export const sendResetOtp = async(req,res)=>{
     const {email} = req.body
+    
     if(!email){
-        return res.json({success:false,message:'Email is Required....'})
-
+        return res.status(400).json({success:false,message:'Email is Required..'});
     }
     try{
         const user = await userModel.findOne({email})
         if(!user){
-     
-            return res.json({success:false,message:'User not found....'})
-
+            return res.status(404).json({success:false,message:'User not found..'})
         }
-      const otp = String(Math.floor(100000 + Math.random()*900000))
-      user.resetOtp = otp
-      user.resetOtpExpiresAt = Date.now()+24*60*60*1000
-      await user.save()
+        else{
+
+            const otp = String(Math.floor(100000 + Math.random()*900000))
+            user.resetOtp = otp
+            user.resetOtpExpiresAt = Date.now()+24*60*60*1000
+            await user.save()
+            
+
+            const mailOption ={
+                from: process.env.SENDER_EMAIL,
+                to:user.email,
+                subject: "Password Reset OTP",
+                text: `Your OTP for Resetting Password is ${otp}. Using this OTP to proceed with resetting your password.`
+            }
+      
+            await transporter.sendMail(mailOption)
+            return res.status(200).json({success:true,message:'OTP sent to your email..'})
+        }
+
     
-
-        const mailOption ={
-        from: process.env.SENDER_EMAIL,
-        to:user.email,
-        subject: "Password Reset OTP",
-        text: `Your OTP for Resetting Password is ${otp}. Using this OTP to proceed with resetting your password.`
-
-
-      }
-      await transporter.sendMail(mailOption)
-        return res.json({success:true,message:'OTP sent to your email....'})
-
-
-
     }catch(error){
-        res.status({success:false,message:error})
+        res.status(500).json({success:false,message:"Server error. Please try again later"})
     }
 }
 
