@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../services/api";
@@ -8,7 +9,7 @@ function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "user",
+    role: "Role",
   });
 
   const [message, setMessage] = useState("");
@@ -27,27 +28,57 @@ function Register() {
   };
 
   // handle form submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!form.name){
+      setMessage("Enter your Name First!")
+      return;
+    }
+
+    if(!form.email){
+      setMessage("Enter your Email!")
+      return;
+    }
+
     if (!isStrongPassword(form.password)) {
-      setMessage(
-        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
-      );
+      setMessage("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      setMessage("Passwords do not match!");
+      setMessage("Passwords not match!");
       return;
     }
 
-    // frontend success message
-    console.log("Registered User:", form);
-    setMessage("Registration successful! Redirecting to login...");
+    if(form.role === "Role"){
+      setMessage("Select your role")
+      return;
+    }
 
-    // simulate navigation
-    setTimeout(() => navigate("/login"), 1500);
+   
+
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, form);
+        if(response.status == 200){
+          setMessage(response.data.message);
+        }
+
+    } catch (error) {
+
+        if(error.response){
+          setMessage(error.response.data.message);
+        }
+        else if(error.request){
+          setMessage("No response from server. Try again later.");
+        }
+        else{
+          setMessage(error.message)
+        }
+        return;    
+    }
+
+    navigate("/login")
   };
 
   return (
@@ -64,7 +95,7 @@ function Register() {
           placeholder="Name"
           className="w-full p-2 border rounded"
           onChange={handleChange}
-          required
+   
         />
 
         <input
@@ -73,7 +104,7 @@ function Register() {
           placeholder="Email"
           className="w-full p-2 border rounded"
           onChange={handleChange}
-          required
+    
         />
 
         <input
@@ -82,7 +113,7 @@ function Register() {
           placeholder="Password"
           className="w-full p-2 border rounded"
           onChange={handleChange}
-          required
+
         />
 
         <input
@@ -91,17 +122,21 @@ function Register() {
           placeholder="Confirm Password"
           className="w-full p-2 border rounded"
           onChange={handleChange}
-          required
+
         />
 
         <select
           name="role"
           className="w-full p-2 border rounded"
-          value={form.role}
           onChange={handleChange}
           required
         >
+<<<<<<< HEAD
           <option value="user">Client</option>
+=======
+          <option selected disabled>Role</option>
+          <option value="user">User</option>
+>>>>>>> 8303921a88d61d02949db0714596b7f38a4a6f9b
           <option value="freelancer">Freelancer</option>
         </select>
 

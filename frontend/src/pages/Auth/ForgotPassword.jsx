@@ -1,20 +1,30 @@
 import { useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
-    console.log(" Forgot password email:", email);
-
-    // Mock success message
-    if (email) {
-      setMessage("If this email exists, a reset link will be sent. (Mock)");
-    } else {
-      setMessage("Please enter your email!");
+    try {
+      
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/send-reset-otp`, { email });
+        if(response.status == 200){
+            setMessage(response.data.message);
+        }
+    } catch (error) {
+        if(error.response){
+            setMessage(error.response.data.message)
+        }
+        else if(error.request){
+           setMessage("No response from server. Try again later.")
+        }
+        else(
+          setMessage(error.message)
+        )
     }
   };
 
@@ -32,7 +42,6 @@ function ForgotPassword() {
           className="w-full p-2 border rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
         />
 
         {message && (
