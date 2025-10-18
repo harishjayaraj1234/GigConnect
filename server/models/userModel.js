@@ -12,7 +12,6 @@ const userSchema = new mongoose.Schema({
     resetOtp:{type:String,default:""},
     resetOtpExpireAt:{type:Date,default:0}
 
-
 })
 
 const userModel = mongoose.model('user',userSchema)

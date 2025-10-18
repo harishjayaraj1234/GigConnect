@@ -7,20 +7,19 @@ export const getUserData = async (req,res)=>{
         const user = await userModel.findById(userId)
 
         if(!user){
-            return res.json({success:false,message:"user not found..."})
+            return res.this.status(404).json({success:false,message:"user not found..."})
             
         }
-        res.json({success:true,
+        res.status(200).json({success:true,
             userData:{
-            name:user.name,
-            isAccountVerified: user.isAccountVerified,
-            role:user.role
-
-        }
-    })
+                name:user.name,
+                isAccountVerified: user.isAccountVerified,
+                role:user.role
+            }
+        })
 
     }catch(error){
-        res.json({success:false,message:error.message})
+        res.status(500).json({success:false,message:error.message})
         
     }
 }

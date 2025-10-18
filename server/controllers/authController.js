@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs"
 import jwt from 'jsonwebtoken'
 import userModel from "../models/userModel.js"
+import gigModel from "../models/gigModel.js"
 import transporter from "../config/nodemailer.js"
 
 
@@ -244,11 +245,6 @@ export const sendResetOtp = async(req,res)=>{
 }
 
 
-
-
-
-
-
 // Reset User Password
 
 export const resetPassword = async(req,res)=>{
@@ -291,5 +287,28 @@ export const resetPassword = async(req,res)=>{
     }catch(error){
         res.status({success:false,message:error})
 
+    }
+}
+
+// post Gig
+
+export const gigPost = async(req,res)=>{
+    const  {title, description, category, budget, location} = req.body;
+
+    if(!title || !description || !category || !budget || !location){
+        return res.status(400).json({sucess:false,message:"Missing Details..."});
+    }
+
+    const clientId = await req.body.userId;
+    
+    try {
+        const gig = new gigModel({title, description, budget, category, location, clientId});
+        await gig.save();
+        
+        return res.status(200).json({success:true, message : "Gig posted successfully!"})
+
+        
+    } catch (error) {
+       return res.status(500).json({success: false, message : "Server error. Please try again later"});
     }
 }

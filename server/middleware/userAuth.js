@@ -1,8 +1,8 @@
+import userModel from '../models/userModel.js'
 import jwt from 'jsonwebtoken'
 
 const userAuth = async(req,res,next)=>{
-    const {token} = req.cookies
-    console.log('Cookies:', req.cookies);
+    const token = req.cookies.token
 
     if(!token){
         return res.json({success:false,message:"Not Authorized Login again..."})
@@ -10,7 +10,14 @@ const userAuth = async(req,res,next)=>{
     }
     try{
        const tokenDecode = jwt.verify(token, process.env.JWT_SECRET)
+       
        if(tokenDecode.id){
+        
+          const user = await userModel.findById(tokenDecode.id);
+          if(!user){
+             return res.status(404).json({ success: false, message: "User not found." });
+          }
+
         req.body.userId = tokenDecode.id
        }else{
         return res.json({success:false,message:"Not Authorized..."})
