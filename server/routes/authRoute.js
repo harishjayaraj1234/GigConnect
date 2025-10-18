@@ -1,5 +1,5 @@
 import express from 'express'
-import { isAuthenticated, login, logout, register, resetPassword, sendResetOtp, sendVerifyOtp, verifyEmail , gigPost} from '../controllers/authController.js'
+import { isAuthenticated, login, logout, register, resetPassword, sendResetOtp, sendVerifyOtp, verifyEmail} from '../controllers/authController.js'
 import userAuth from '../middleware/userAuth.js'
 
 
@@ -16,16 +16,6 @@ authRouter.post('/verify-account',userAuth,verifyEmail)
 authRouter.post('/is-auth', userAuth,isAuthenticated)     
 authRouter.post('/send-reset-otp',sendResetOtp)     
 authRouter.post('/reset-password',resetPassword)  
-
-//Post a Gig Route
-
-authRouter.post('/post-gig',userAuth,gigPost)
-
-
-
-
-
-
 
 
 
