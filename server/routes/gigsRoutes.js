@@ -14,7 +14,7 @@ gigsRouter.post('/', userAuth, async(req,res)=>{
         return res.status(400).json({sucess:false,message:"Missing Details..."});
     }
 
-    const clientId = await req.body.userId;
+    const clientId = await req.cookies.userId;
     try {
         const gig = new gigModel({title, description, budget, category, location, clientId});
         await gig.save();
@@ -60,10 +60,40 @@ gigsRouter.patch('/:id/complete',userAuth,async(req,res)=>{
     }
 })
 
-//GET
-// gigsRouter.get('/:id/bookings',userAuth,async(req,res)=>{
-//     const gig = await gigModel.findById(req.params.id).populate('bookings.freelancerId')
-//     res.json(gig.bookings)
-// })
+
+gigsRouter.get('/', async(req, res) => {
+    try {
+         const gig = await gigModel.find();
+         if(!gig){
+             res.status(404).json({success : false, message : "No Gig Found!!"});
+         }
+
+         res.status(200).json(gig);
+
+    } catch (error) {
+         res.status(500).json({success: false, message : "internal server error!"});
+    }
+})
+
+
+//Single Gig Information
+gigsRouter.get('/:id', async(req, res) => {
+    try {
+        const gigId = req.params.id;
+        const gig = await gigModel.findOne({_id : gigId});
+
+
+         if(!gig){
+             res.status(404).json({success : false, message : "No Gig Found!!"});
+         }
+
+         res.status(200).json(gig);
+
+    } catch (error) {
+         res.status(500).json({success: false, message : "internal server error!"});
+    }
+})
+
+
 
 export default gigsRouter

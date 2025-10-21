@@ -6,6 +6,7 @@ import connectDB from "./config/mongodb.js"
 import authRouter from "./routes/authRoute.js"
 import userRouter from "./routes/userRoutes.js"
 import gigsRouter from "./routes/gigsRoutes.js"
+import bookingRouter from "./routes/bookingRouter.js";
 
 env.config()
 const app = express()
@@ -20,11 +21,11 @@ app.use(cors({credentials:true}))
 
 
 // API EndPoints
-app.get('/',(req,res)=>res.send("API Working"))
+// app.get('/',(req,res)=>res.send("API Working"))
 app.use('/api/auth',authRouter)
 app.use('/api/user',userRouter)
 app.use('/api/gigs',gigsRouter)
-
+app.use('/booking', bookingRouter);
 
 
 app.listen(port,()=>{
