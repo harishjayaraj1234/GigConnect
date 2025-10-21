@@ -5,14 +5,69 @@ import http from "http"
 import {Server} from "socket.io"
 import cookieParser from "cookie-parser"
 import connectDB from "./config/mongodb.js"
+import { Server } from "socket.io"
+import http from 'http'
 import authRouter from "./routes/authRoute.js"
 import userRouter from "./routes/userRoutes.js"
-import gigsRouter from "./routes/gigsRoutes.js"
 
 env.config()
 const app = express()
 const port = process.env.PORT
 connectDB()
+
+
+// connecting Server with socket.io
+
+const server = http.createServer(app)
+const io = new Server(server,{
+    cors:{
+        origin: '*',
+        methods: ['GET','POST']
+    }
+})
+
+
+let onlineUsers = {}
+
+io.on('connection',(socket)=>{
+    console.log('User connected', socket.id)
+
+
+// Register user with their userId
+
+socket.on('register',(userId)=>{
+    onlineUsers[userId] = socket.id
+    console.log(`User ${userId} registered with socket ${socket.id}`)
+
+})
+
+
+// Handle private message
+
+socket.on('private_message',({senderId,receiverId,message})=>{
+    const receiverSocketId = onlineUsers[receiverId]
+    if(receiverSocketId){
+        io.to(receiverSocketId).emit('private_message',{
+            senderId,
+            message
+        })
+    }
+})
+
+
+// Handle disconnect
+
+socket.on('dissconnect',()=>{
+    console.log('user disconnected:', socket.id)
+    for(const userId in onlineUsers){
+        if(onlineUsers[userId] === socket.id){
+            delete onlineUsers[userId]
+            break
+        }
+    }
+})
+
+})
 
 
 app.use(express.json())
@@ -80,7 +135,6 @@ socket.on('disconnect',()=>{
 app.get('/',(req,res)=>res.send("API Working"))
 app.use('/api/auth',authRouter)
 app.use('/api/user',userRouter)
-app.use('/api/gigs',gigsRouter)
 
 
 
