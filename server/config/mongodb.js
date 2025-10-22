@@ -1,4 +1,5 @@
-import mongoose from "mongoose"
+
+import mongoose from "mongoose";
 
 const connectDB =  (()=>{
      mongoose.connect('mongodb+srv://sarankumar742001:gigconnect123@cluster0.r6ard50.mongodb.net/').then(()=>{
