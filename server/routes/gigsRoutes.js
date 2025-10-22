@@ -19,7 +19,7 @@ gigsRouter.post('/', userAuth, async(req,res)=>{
         const gig = new gigModel({title, description, budget, category, location, clientId});
         await gig.save();
         
-        return res.status(200).json({success:true, message : "Gig posted successfully!"})
+        return res.status(200).json({success:true, message : "Gig posted successfully"})
 
         
     } catch (error) {

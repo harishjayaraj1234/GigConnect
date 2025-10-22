@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 
 const reviewModel = new mongoose.Schema({
+    bookingId: { type: mongoose.Schema.Types.ObjectId, ref: "Booking", required: true },
     clientId : {type: mongoose.Schema.Types.ObjectId, ref: "User", requierd: true},
     freelancerId : {type: mongoose.Schema.Types.ObjectId, ref: "User", requierd: true},
-    ratings : {type: Number, min:1, max:5, requierd: true},
+    rating : {type: Number, min:1, max:5, requierd: true},
     comment : {type : String},
-    createdAt : {type : Timestamp, default: Date.now}
+    createdAt : {type : Date, default: Date.now}
 })
 
 
