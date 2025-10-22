@@ -7,6 +7,7 @@ import transporter from "../config/nodemailer.js"
 export const register = async(req,res)=>{
 
     const {name,email,password,role} = req.body
+    const skills = "";
 
     if(!name || !email || !password || !role){
         return res.status(400).json({sucess:false,message:"Missing Details..."})
@@ -18,20 +19,19 @@ export const register = async(req,res)=>{
         }
         const hashedPassword = await bcrypt.hash(password,10)
 
-        const user = new userModel({name,email,password:hashedPassword,role})
+        const user = new userModel({name,email,password:hashedPassword,role,skills})
         await user.save()
 
-        const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expireIn:'7d'})
+        const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expiresIn:'7d'})
 
         res.cookie('token',token, {
             httpOnly:true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none':'strict',
-            maxAge: 7*24*60*60*1000
-             
+            maxAge: 7*24*60*60*1000 
         })
        
-        //Sending welcome email
+        // Sending welcome email
         const mailOptions ={
             from: process.env.SENDER_EMAIL,
             to: email,
@@ -40,11 +40,12 @@ export const register = async(req,res)=>{
         }
         
         await transporter.sendMail(mailOptions)
-        return res.status(200).json({success:true,message:"User Created Successfully...."})
+
+        return res.status(200).json("User Created Successfully....");
 
 
     }catch(error){
-        // res.status(500).json({success:false,message:"Server error. Please try again later"})
+        res.status(500).json({success:false,message:"Server error. Please try again later"})
     }
 
 }

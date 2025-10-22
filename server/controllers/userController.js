@@ -1,10 +1,23 @@
 import userModel from "../models/userModel.js";
 
+
+export const profileUpdate = async (req, res) => {
+    try {
+        const { name, location, skills } = 
+        userModel.updateOne({})
+    } catch (error) {
+        
+    }
+}
+
+
+
+
 export const getUserData = async (req,res)=>{
     try{
-        const {userId} = req.body
+        const userId = req.cookies.userId
 
-        const user = await userModel.findById(userId)
+        const user = await userModel.findById(userId);
 
         if(!user){
             return res.this.status(404).json({success:false,message:"user not found..."})

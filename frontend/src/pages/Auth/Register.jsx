@@ -60,7 +60,7 @@ function Register() {
     try {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, form);
         if(response.status == 200){
-          setMessage(response.data.message);
+          setMessage(response.data);
         }
 
     } catch (error) {
@@ -77,7 +77,9 @@ function Register() {
         return;    
     }
 
-    navigate("/login")
+    setTimeout(() =>{
+        navigate("/login");
+    },1000)
   };
 
   return (
