@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import Navbar from "../../components/common/Navbar";
 import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
@@ -43,7 +44,9 @@ function Login() {
   };
 
   return (
+    
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      {/* <Navbar /> */}
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-md w-96 space-y-4"

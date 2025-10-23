@@ -3,10 +3,13 @@ import Login from "./pages/Auth/login.jsx";
 import Register from "./pages/Auth/Register";
 import Chat from "./pages/Chatting/chat.jsx"
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+import Navbar from "./components/common/Navbar";
+import Footer from "./components/common/Footer";
 
 function App() {
   return (
     <Routes>
+      
       {/* Redirect root to login */}
       <Route path="/" element={<Navigate to="/login" />} />
 
@@ -23,7 +26,7 @@ function App() {
       {/* Optional 404 route */}
       <Route
         path="*"
-        element={<h2 className="text-center mt-10">404 - Page Not Found</h2>}
+        element={<h2 className="text-center mt-10" >404 - Page Not Found</h2>}
       />
     </Routes>
   );
