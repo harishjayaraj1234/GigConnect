@@ -5,11 +5,22 @@ import cookieParser from "cookie-parser"
 import connectDB from "./config/mongodb.js"
 import http from 'http'
 import {Server} from "socket.io"
-import messageModel from "./models/messageModel.js"
-import authRouter from "./routes/authRoute.js"
-import userRouter from "./routes/userRoutes.js"
-import gigsRouter from "./routes/gigsRoutes.js"
-import bookingRouter from "./routes/bookingRouter.js";
+
+// Razorpay logic
+import Razorpay from "razorpay"
+import paymentRouter from "./routes/paymentRoutes.js"
+
+
+export const instance = new Razorpay({
+  key_id: 'process.env.RAZORPAY_API_KEY',
+  key_secret: 'process.env.RAZORPAY_API_SECRET'
+});
+
+
+
+
+
+
 
 env.config()
 const app = express()
@@ -94,12 +105,14 @@ app.use(cors({credentials:true}))
 app.get('/',(req,res)=>res.send("API Working"))
 
 // app.get('/',(req,res)=>res.send("API Working"))
-app.use('/api/auth',authRouter)
-app.use('/api/user',userRouter)
-app.use('/api/gigs',gigsRouter)
-app.use('/booking', bookingRouter);
+
+// app.use('/api/auth',authRouter)
+// app.use('/api/user',userRouter)
+// app.use('/api/gigs',gigsRouter)
+// app.use('/booking', bookingRouter);
 
 
+app.use("/api/payment",paymentRouter)
 
 
 
