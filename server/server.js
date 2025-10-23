@@ -53,6 +53,6 @@ app.use('/booking', bookingRouter);
 app.use('/reviews', reviewRouter)
 app.use("/payment",paymentRouter)
 
-app.listen(port,()=>{
+server.listen(port,()=>{
     console.log(`Server Stared on PORT:${port}`)
 })
