@@ -8,14 +8,14 @@ const authRouter = express.Router()
 
 // User Authentication routes
 
-authRouter.post('/register',register)   
-authRouter.post('/login',login)    
-authRouter.post('/logout',logout)  
-authRouter.post('/send-verify-otp', userAuth, sendVerifyOtp)  
-authRouter.post('/verify-account',userAuth,verifyEmail) 
-authRouter.post('/is-auth', userAuth,isAuthenticated)     
-authRouter.post('/send-reset-otp',sendResetOtp)     
-authRouter.post('/reset-password',resetPassword)  
+authRouter.post('/register',register)   //done
+authRouter.post('/login',login)    //done
+authRouter.post('/logout',logout)  //done
+authRouter.post('/send-verify-otp', userAuth, sendVerifyOtp)  //done
+authRouter.post('/verify-account', userAuth, verifyEmail)        //done
+authRouter.post('/is-auth', userAuth,isAuthenticated)     //done
+authRouter.post('/send-reset-otp',sendResetOtp)     //done
+authRouter.post('/reset-password',resetPassword)    //done
 
 
 

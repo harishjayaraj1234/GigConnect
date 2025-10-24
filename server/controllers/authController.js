@@ -76,9 +76,8 @@ export const login = async(req,res)=>{
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
-
+        
         res.cookie('token',token, {
-            httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none':'strict',
             maxAge: 7*24*60*60*1000   
@@ -113,7 +112,6 @@ export const logout = async(req,res)=>{
 
     
 export const sendVerifyOtp = async(req, res)=>{
-        console.log('hello')
     try{
         
         const {email} = req.body
@@ -130,39 +128,30 @@ export const sendVerifyOtp = async(req, res)=>{
             user.verifyOtp = otp
             
             user.verifyOtpExpireAt = Date.now()+24*60*60*1000
+
+
+            const mailOption = {
+                from: process.env.SENDER_EMAIL,
+                to:user.email,
+                subject: "Account Verification OTP",
+                text: `Your OTP is ${otp}. Verify your account using this OTP.`
+
+            }
+            await transporter.sendMail(mailOption)
+            await user.save()
+            return res.json({sucess:true,message:"Verification OTP Sent on Email...."})
         }else{
             return res.status(404).json({success:false, message: "Enter correct Email.."})
         }
-        
-        
-        try {
-            await user.save()
-            console.log(user)
-        } catch (error) {
-           return res.json({sucess:false,error})
-        }
-
-        const mailOption = {
-            from: process.env.SENDER_EMAIL,
-            to:user.email,
-            subject: "Account Verification OTP",
-            text: `Your OTP is ${otp}. Verify your account using this OTP.`
-
-        }
-      await transporter.sendMail(mailOption)
-      return res.json({sucess:true,message:"Verification OTP Sent on Email...."})
-
-
-
-    }catch(error){
-         
-        res.json({sucess:false,message:error})
+    }catch(error){ 
+        res.status(500).json({success: false, message : "internal server error"});
     }
 }
 
 
 export const verifyEmail = async(req,res)=>{
-    const {userId, otp} = req.body
+    const userId = req.cookies.userId;
+    const {otp} = req.body
 
     if(!userId || !otp){
         return res.json({sucess:false,message:"Missing Details..."})
@@ -172,13 +161,12 @@ export const verifyEmail = async(req,res)=>{
         const user = await userModel.findById(userId)
         if(!user){
             return res.json({sucess:false,message:"User not found..."})
-
         }
-        if(user.verifyOtp === '' || user.verifyOtp !== otp){
+
+        if(user.verifyOtp == '' || user.verifyOtp != otp){
             return res.json({sucess:false,message:"Invalid OTP..."})
-
-
         }
+        
         if(user.verifyOtpExpireAt<Date.now()){
             return res.json({sucess:false,message:"OTP Expired..."})
 
@@ -221,7 +209,7 @@ export const sendResetOtp = async(req,res)=>{
     try{
         const user = await userModel.findOne({email})
         if(!user){
-            return res.status(404).json({success:false,message:'User not found..'})
+            return res.status(404).json({success:false,message:'User notsdfsd found..'})
         }
         else{
 
@@ -252,11 +240,12 @@ export const sendResetOtp = async(req,res)=>{
 // Reset User Password
 
 export const resetPassword = async(req,res)=>{
-    const {email,otp,newPassword} = req.body
+    const {email, otp, password} = req.body
 
-    if(!email || !otp || !newPassword){
+    console.log(email, otp, password)
+
+    if(!email || !otp || !password){
         return res.json({success:false,message:'Email,OTP,newPassword are required....'})
-
     }
     try{
         const user = await userModel.findOne({email})
@@ -274,7 +263,7 @@ export const resetPassword = async(req,res)=>{
             return res.json({success:false,message:'OTP Expired...'})
 
         }
-        const hashedPassword = await bcrypt.hash(newPassword,10)
+        const hashedPassword = await bcrypt.hash(password,10)
         user.password = hashedPassword
         user.resetOtp = ''
         user.resetOtpExpiresAt = 0

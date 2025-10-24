@@ -21,7 +21,7 @@ function Login() {
       
 
       try {
-          const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, form);
+          const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, form, { withCredentials: true });
           
           if(response.status == 200){
             setMessage(response.data.message);

@@ -1,38 +1,37 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Auth/login.jsx";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Auth/login";
+import IdVerify from "./pages/Auth/IdVerify";
 import Register from "./pages/Auth/Register";
-import Chat from "./pages/Chatting/chat.jsx"
-import ForgotPassword from "./pages/Auth/ForgotPassword";
-import Navbar from "./components/common/Navbar";
-import Footer from "./components/common/Footer";
-import WalletPage from "./components/wallet/walletPage.jsx";
-import IdVerify from "./pages/Auth/IdVerify.jsx";
+import ForgotPassword from "./pages/Auth/ForgotPassword"
+import Home from "./pages/Auth/Home";
+import ProtectedRoute from "./pages/Auth/protectedRoute";
 
 function App() {
   return (
-    <Routes>
-      
-      {/* Redirect root to login */}
-      <Route path="/" element={<Navigate to="/login" />} />
+    <Router>
+      <Routes>
+        {/* ---------- Public Routes ---------- */}
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-account" element={<IdVerify/>}/>
+        <Route path="/register" element={<Register />} />
 
-      {/* Auth routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/register/verify" element={<IdVerify />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/wallet" element={<WalletPage />} />
+        {/* ---------- Protected Routes ---------- */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Chatting Routes */}
-      <Route path="/Chat" element={<Chat />} />
-
-
-
-      {/* Optional 404 route */}
-      <Route
-        path="*"
-        element={<h2 className="text-center mt-10" >404 - Page Not Found</h2>}
-      />
-    </Routes>
+        {/* ---------- Catch-all ---------- */}
+        <Route path="*" element={<h2>404 Page Not Found</h2>} />
+      </Routes>
+    </Router>
   );
 }
 

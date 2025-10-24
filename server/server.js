@@ -27,21 +27,22 @@ const io = new Server(server, {
     }
 });
 
+
 socketHandler(io);
 
 app.use(express.json())
-app.use(cookieParser())
-app.use(cors({credentials:true}))
+app.use(cookieParser());
+app.use(cors({
+  origin: 'http://localhost:5173',  
+  methods: ['GET','POST','PUT','DELETE'],
+  credentials: true               
+}));
 
-// Razorpay logic
+
 import Razorpay from "razorpay"
 import paymentRouter from "./routes/paymentRoutes.js"
 
 
-app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
-}));
 
 
 export const instance = new Razorpay({
@@ -50,8 +51,6 @@ export const instance = new Razorpay({
 });
 
 
-// API EndPoints
-// app.get('/',(req,res)=>res.send("API Working"))
 app.use('/api/auth',authRouter)
 app.use('/api/user',userRouter)
 app.use('/api/gigs',gigsRouter)
