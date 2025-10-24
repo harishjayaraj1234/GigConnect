@@ -19,7 +19,7 @@ const userAuth = async(req,res,next)=>{
          }
          
          // req.body.userId =  tokenDecode.id
-         req.cookies.userId = await tokenDecode.id
+         res.cookie('userId', user._id)
          
       }else{
          return res.json({success:false,message:"Not Authorized..."})

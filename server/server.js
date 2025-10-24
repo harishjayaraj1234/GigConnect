@@ -38,6 +38,12 @@ import Razorpay from "razorpay"
 import paymentRouter from "./routes/paymentRoutes.js"
 
 
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
+
+
 export const instance = new Razorpay({
   key_id: process.env.RAZORPAY_API_KEY,
   key_secret: process.env.RAZORPAY_API_SECRET

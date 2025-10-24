@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import IdVerify from "./IdVerify";
+import { Link, redirect, useNavigate } from "react-router-dom";
 
 function Register() {
   const [form, setForm] = useState({
@@ -78,7 +79,7 @@ function Register() {
     }
 
     setTimeout(() =>{
-        navigate("/login");
+        navigate("/register/verify");
     },1000)
   };
 

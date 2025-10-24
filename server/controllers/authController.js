@@ -21,7 +21,7 @@ export const register = async(req,res)=>{
 
         const user = new userModel({name,email,password:hashedPassword,role,skills})
         await user.save()
-
+        res.cookie('userId', user._id)
         const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expiresIn:'7d'})
 
         res.cookie('token',token, {
@@ -70,7 +70,7 @@ export const login = async(req,res)=>{
         if(!isMatch){
             return res.status(401).json({success:false,message:"Invalid email or password"})
         }
-
+        res.cookie('userId', user._id)
         const token = jwt.sign(
             { id: user._id },
             process.env.JWT_SECRET,
@@ -81,10 +81,9 @@ export const login = async(req,res)=>{
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none':'strict',
-            maxAge: 7*24*60*60*1000
-             
+            maxAge: 7*24*60*60*1000   
         })
-        return res.status(200).json({success:true,message:"User LoggedIn...."}) 
+        return res.status(200).json({success:true,message:"User LoggedIn....",_id: user._id}) 
 
     }catch(error){
         res.status(500).json({success:false,message:"Server error. Please try again later"})
@@ -114,18 +113,26 @@ export const logout = async(req,res)=>{
 
     
 export const sendVerifyOtp = async(req, res)=>{
-    
+        console.log('hello')
     try{
         
-        const {userId} = req.body       
-        const user = await userModel.findById(userId)
-        if(user.isAccountVerified){
-           return res.json({sucess:false,message:"Account already verified...."})
-        }
-        const otp = String(Math.floor(100000 + Math.random()*900000))
-        user.verifyOtp = otp
+        const {email} = req.body
+        const userId = req.cookies.userId;
         
-        user.verifyOtpExpireAt = Date.now()+24*60*60*1000
+        console.log(req.cookies.userId)     
+        const user = await userModel.findById(userId)
+        if(user.email == email){
+
+            if(user.isAccountVerified){
+                return res.json({sucess:false,message:"Account already verified...."})
+            }
+            const otp = String(Math.floor(100000 + Math.random()*900000))
+            user.verifyOtp = otp
+            
+            user.verifyOtpExpireAt = Date.now()+24*60*60*1000
+        }else{
+            return res.status(404).json({success:false, message: "Enter correct Email.."})
+        }
         
         
         try {
