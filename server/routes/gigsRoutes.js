@@ -29,14 +29,41 @@ gigsRouter.post('/', userAuth, async(req,res)=>{
 
 
 //GET           done
-gigsRouter.get('/client', userAuth, async(req,res)=>{
-    try{
-        const gigs = await gigModel.find({clientId: req.body.userId})
-        res.json(gigs)
-    } catch (error) {
-        res.status(500).json({message : error.message});
-    }
-})
+
+ gigsRouter.get('/client', userAuth, async(req,res)=>{
+    const allGigs = [
+        {
+            id: 1,
+            title: "Web Design for Startup",
+            category: "Design",
+            price: 200,
+            description: "Need a modern landing page for a new tech startup.",
+            image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+          },
+          {
+            id: 2,
+            title: "Full Stack Developer Needed",
+            category: "Development",
+            price: 500,
+            description: "Looking for MERN developer to build a dashboard.",
+            image: "https://images.unsplash.com/photo-1581090465349-3e87e0a1b6af",
+          },
+          {
+            id: 3,
+            title: "Social Media Manager",
+            category: "Marketing",
+            price: 150,
+            description: "Manage social channels for a lifestyle brand.",
+            image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
+          }
+    ]
+    res.json(allGigs)
+
+
+
+ })
+
+
 
 
 //PUT       done
