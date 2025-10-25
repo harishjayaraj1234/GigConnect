@@ -6,12 +6,15 @@ import Register from "./pages/Auth/Register";
 import Home from "./pages/Auth/Home";
 import ProtectedRoute from "./pages/Auth/protectedRoute";
 import AllGigs from "./pages/gigs/allGigs";
+import GigsDetails from "./pages/gigs/gigsDetails";
+import CreateGig from "./pages/gigs/createGigs";
 
 function App() {
   return (
     <Router>
       <Routes>
-       <Route path="/allgigs" element={<AllGigs/>}/>
+       <Route path="/creategigs" element={<CreateGig/>}/>
+
       </Routes>
     </Router>
   );
