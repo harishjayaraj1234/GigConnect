@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-function Login() {
+function Login({ setUserRole }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -13,30 +13,43 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log("Login form data:", form);
+    setMessage(""); // reset message
 
     if (form.email && form.password) {
-      
-
       try {
-          const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, form);
-          if(response.status == 200){
-            setMessage(response.data.message);
-          }
-      } catch (error) {
-          if(error.response){
-              setMessage(error.response.data.message);
-          }
-          else if(error.request){
-              setMessage("No response from server. Try again later.")
-          }
-          else{
-              setMessage(error.message);
-          }
-          return;
-      }
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/auth/login`,
+          form
+        );
 
+        console.log("Login response:", response.data);
+
+        if (response.status === 200) {
+          setMessage(response.data.message);
+
+          // ✅ Assume backend sends role (e.g., freelancer, client, admin)
+          const userRole = response.data.role || "freelancer"; // fallback
+          const token = response.data.token;
+
+          // Save in localStorage (optional but useful)
+          localStorage.setItem("userRole", userRole);
+          localStorage.setItem("token", token);
+
+          // Set userRole in App.js state (if passed as prop)
+          if (setUserRole) setUserRole(userRole);
+
+          // ✅ Redirect to main dashboard
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        if (error.response) {
+          setMessage(error.response.data.message || "Login failed");
+        } else if (error.request) {
+          setMessage("No response from server. Try again later.");
+        } else {
+          setMessage(error.message);
+        }
+      }
     } else {
       setMessage("Please enter valid credentials!");
     }
@@ -70,7 +83,10 @@ function Login() {
           <p className="text-sm text-center text-gray-600">{message}</p>
         )}
 
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
+        >
           Login
         </button>
 
@@ -90,4 +106,5 @@ function Login() {
     </div>
   );
 }
+
 export default Login;

@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../../services/api";
 
 function Register() {
   const [form, setForm] = useState({
@@ -64,7 +63,7 @@ function Register() {
         form
       );
       if (response.status == 200) {
-        setMessage(response.data.message);
+        setMessage(response.data);
       }
     } catch (error) {
       if (error.response) {
@@ -77,7 +76,9 @@ function Register() {
       return;
     }
 
-    navigate("/login");
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
   };
 
   return (
@@ -129,7 +130,7 @@ function Register() {
           <option selected disabled>
             Role
           </option>
-          <option value="user">Client</option>
+          <option value="user">User</option>
           <option value="freelancer">Freelancer</option>
         </select>
 

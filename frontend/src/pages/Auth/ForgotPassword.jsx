@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../../services/api";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -26,7 +25,8 @@ export default function ForgotPassword() {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-md w-96 space-y-4"
       >
-        <h2 className="text-2xl font-bold text-center">Forgot Password</h2>
+        <h2 className="text-2xl font-bold text-center mb-2">Forgot Password</h2>
+
         <input
           type="email"
           placeholder="Enter your email"

@@ -1,25 +1,16 @@
-// import express from 'express'
-// import userAuth from '../middleware/userAuth.js'
-// import { getUserData } from '../controllers/userController.js'
-
-// const userRouter = express.Router()
-
-// userRouter.get('/data',userAuth,getUserData)
-
-// export default userRouter
-
 import express from "express";
 import userAuth from "../middleware/userAuth.js";
 import {
   getUserData,
-  forgotPassword,
-  verifyOtp,
+  profileUpdate,
+  getListUsersData,
 } from "../controllers/userController.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/data", userAuth, getUserData);
-userRouter.post("/forgot-password", forgotPassword);
-userRouter.post("/verify-otp", verifyOtp);
+userRouter.get("/data", userAuth, getUserData); //personal information
+userRouter.get("/data/:id", userAuth, getUserData); //user information
+userRouter.get("/data/all-user", userAuth, getListUsersData); // all Opposite role users
+userRouter.put("/profile-update", userAuth, profileUpdate); // update personal profile
 
 export default userRouter;
