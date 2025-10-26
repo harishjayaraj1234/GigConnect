@@ -6,6 +6,7 @@ const gigSchema = new mongoose.Schema({
         description: { type: String, required: true },
         category: { type: String },
         budget: { type: Number },
+        image: {type: String , required: true},
         location: { type: String },
         status: { type: String, default: "open" },
         createdAt: { type: Date, default: Date.now }

@@ -6,6 +6,10 @@ import Register from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword"
 import Home from "./pages/Auth/Home";
 import ProtectedRoute from "./pages/Auth/protectedRoute";
+import AllGigs from "./pages/gigs/allGigs";
+import GigsDetails from "./pages/gigs/gigsDetails";
+import CreateGig from "./pages/gigs/createGigs";
+import Chat from "./pages/chatting/chat"
 
 function App() {
   return (
@@ -17,19 +21,10 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-account" element={<IdVerify/>}/>
         <Route path="/register" element={<Register />} />
-
-        {/* ---------- Protected Routes ---------- */}
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* ---------- Catch-all ---------- */}
-        <Route path="*" element={<h2>404 Page Not Found</h2>} />
+        <Route path="/all-gigs" element={<AllGigs />} />
+        <Route path="/GigsDetails/:id" element={<GigsDetails />} />
+        <Route path="/chating/:id" element={<Chat />} />
+        <Route path="/creategigs" element={<CreateGig/>}/>
       </Routes>
     </Router>
   );

@@ -6,20 +6,22 @@ import userAuth from '../middleware/userAuth.js'
 
 const gigsRouter = express.Router()
 
-//POST         done
-gigsRouter.post('/', userAuth, async(req,res)=>{
-    const  {title, description, category, budget, location} = req.body;
 
-    if(!title || !description || !category || !budget || !location){
+gigsRouter.post('/', userAuth, async(req,res)=>{
+    const  {title, description, category, budget, image, location} = req.body;
+
+    console.log(title, description, category, budget, image, location)
+    if(!title || !description || !category || !budget || !image || !location){
         return res.status(400).json({sucess:false,message:"Missing Details..."});
     }
 
     const clientId = await req.cookies.userId;
     try {
-        const gig = new gigModel({title, description, budget, category, location, clientId});
+        const gig = new gigModel({title, description, category, budget, image, location, clientId});
         await gig.save();
-        
-        return res.status(200).json({success:true, message : "Gig posted successfully"})
+        if(gig){
+            return res.status(200).json({success:true, message : "Gig posted successfully"})
+        }
 
         
     } catch (error) {
@@ -28,15 +30,40 @@ gigsRouter.post('/', userAuth, async(req,res)=>{
 })
 
 
-//GET           done
-gigsRouter.get('/client', userAuth, async(req,res)=>{
-    try{
-        const gigs = await gigModel.find({clientId: req.body.userId})
-        res.json(gigs)
-    } catch (error) {
-        res.status(500).json({message : error.message});
-    }
-})
+ gigsRouter.get('/client', userAuth, async(req,res)=>{
+    const allGigs = [
+        {
+            id: 1,
+            title: "Web Design for Startup",
+            category: "Design",
+            price: 200,
+            description: "Need a modern landing page for a new tech startup.",
+            image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+          },
+          {
+            id: 2,
+            title: "Full Stack Developer Needed",
+            category: "Development",
+            price: 500,
+            description: "Looking for MERN developer to build a dashboard.",
+            image: "https://images.unsplash.com/photo-1581090465349-3e87e0a1b6af",
+          },
+          {
+            id: 3,
+            title: "Social Media Manager",
+            category: "Marketing",
+            price: 150,
+            description: "Manage social channels for a lifestyle brand.",
+            image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
+          }
+    ]
+    res.json(allGigs)
+
+
+
+ })
+
+
 
 
 //PUT       done
@@ -76,8 +103,7 @@ gigsRouter.get('/', async(req, res) => {
 })
 
 
-//Single Gig Information
-gigsRouter.get('/:id', async(req, res) => {
+gigsRouter.get('/', async(req, res) => {
     try {
         const gigId = req.params.id;
         const gig = await gigModel.findOne({_id : gigId});

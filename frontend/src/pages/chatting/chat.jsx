@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Socket from "socket.io-client";
+import { Navigate, useParams } from "react-router-dom";
 
 const messageStyle = {
     border: "1px solid black",
@@ -13,15 +14,13 @@ const messageStyle = {
 
 const socket = Socket.io(import.meta.env.VITE_API_URL);
 
-
 function ChattingPage() {
+    const { id } = useParams(); 
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
     const msgHandler = (msg) => {
         if (!msg.trim()) return;
-
         const data = { bookingId : "user1", senderId : "user2", text: msg, sender: "me"};
-
         socket.emit("send_message", data);
         setMessages((prev) => [...prev, data]);
         setMessage("");

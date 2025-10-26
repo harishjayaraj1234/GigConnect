@@ -13,7 +13,9 @@
     "axios": "^1.12.2",
     "dotenv": "^17.2.3",
     "env": "^0.0.2",
+    "js-cookie": "^3.0.5",
     "react": "^19.1.1",
+    "react-cookie": "^8.0.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4",
     "socket.io-client": "^4.8.1"
