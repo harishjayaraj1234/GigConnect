@@ -17,11 +17,11 @@ const CreateGig = ({ freelancerId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/gigs", {
+      const res = await axios.post("http://localhost:4000/api/gigs", {
         ...gig,
-        freelancerId, // attach the logged-in freelancer’s ID
+        freelancerId, // logged-in freelancer’s ID
       });
-      alert("Gig created successfully!");
+      alert("Gig created successfully....");
       console.log(res.data);
     } catch (err) {
       console.error("Error:", err);

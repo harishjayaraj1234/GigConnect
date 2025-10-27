@@ -11,8 +11,7 @@ const GigsDetails = () => {
   useEffect(() => {
     const fetchGig = async () => {
       try {
-        // ✅ Replace with your real backend URL
-        const res = await axios.get(`https://localhost:5000/api/gigs/:${id}`);
+        const res = await axios.get(`https://localhost:4000/api/gigs/:${id}`);
         setGig(res.data);
       } catch (err) {
         console.error("Error fetching gig details:", err);

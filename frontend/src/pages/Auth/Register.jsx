@@ -30,18 +30,20 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name){
-      setMessage("Enter your Name First!")
+    if (!form.name) {
+      setMessage("Enter your Name First!");
       return;
     }
 
-    if(!form.email){
-      setMessage("Enter your Email!")
+    if (!form.email) {
+      setMessage("Enter your Email!");
       return;
     }
 
     if (!isStrongPassword(form.password)) {
-      setMessage("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+      setMessage(
+        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
+      );
       return;
     }
 
@@ -50,36 +52,33 @@ function Register() {
       return;
     }
 
-    if(form.role === "Role"){
-      setMessage("Select your role")
+    if (form.role === "Role") {
+      setMessage("Select your role");
       return;
     }
 
-   
-
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, form);
-        if(response.status == 200){
-          setMessage(response.data);
-        }
-
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/register`,
+        form
+      );
+      if (response.status == 200) {
+        setMessage(response.data);
+      }
     } catch (error) {
-
-        if(error.response){
-          setMessage(error.response.data.message);
-        }
-        else if(error.request){
-          setMessage("No response from server. Try again later.");
-        }
-        else{
-          setMessage(error.message)
-        }
-        return;    
+      if (error.response) {
+        setMessage(error.response.data.message);
+      } else if (error.request) {
+        setMessage("No response from server. Try again later.");
+      } else {
+        setMessage(error.message);
+      }
+      return;
     }
 
-    setTimeout(() =>{
-        navigate("/login");
-    },1000)
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
   };
 
   return (
@@ -96,7 +95,6 @@ function Register() {
           placeholder="Name"
           className="w-full p-2 border rounded"
           onChange={handleChange}
-   
         />
 
         <input
@@ -105,7 +103,6 @@ function Register() {
           placeholder="Email"
           className="w-full p-2 border rounded"
           onChange={handleChange}
-    
         />
 
         <input
@@ -114,7 +111,6 @@ function Register() {
           placeholder="Password"
           className="w-full p-2 border rounded"
           onChange={handleChange}
-
         />
 
         <input
@@ -123,7 +119,6 @@ function Register() {
           placeholder="Confirm Password"
           className="w-full p-2 border rounded"
           onChange={handleChange}
-
         />
 
         <select
@@ -132,7 +127,9 @@ function Register() {
           onChange={handleChange}
           required
         >
-          <option selected disabled>Role</option>
+          <option selected disabled>
+            Role
+          </option>
           <option value="user">User</option>
           <option value="freelancer">Freelancer</option>
         </select>
