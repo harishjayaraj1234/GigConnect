@@ -15,7 +15,7 @@ import socketHandler from "./socket/socketHandler.js"
 
 env.config()
 const app = express()
-const port = process.env.PORT
+const port = process.env.PORT || 3000
 connectDB()
 
 const server = createServer(app); 
@@ -30,6 +30,7 @@ const io = new Server(server, {
 socketHandler(io);
 
 app.use(express.json())
+app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
 app.use(cors({credentials:true}))
 
@@ -51,8 +52,8 @@ app.use('/api/user',userRouter)
 app.use('/api/gigs',gigsRouter)
 app.use('/booking', bookingRouter);
 app.use('/reviews', reviewRouter)
-app.use("/payment",paymentRouter)
+app.use("/api/payment",paymentRouter)
 
-app.listen(port,()=>{
+server.listen(port,()=>{
     console.log(`Server Stared on PORT:${port}`)
 })
