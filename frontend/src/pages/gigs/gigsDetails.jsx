@@ -4,7 +4,6 @@ import axios from "axios";
 
 const GigsDetails = () => {
   const { id } = useParams(); 
-  // const [id, setId] = useState('');
   const [gig, setGig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
