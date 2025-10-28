@@ -8,10 +8,10 @@ function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [forget, setForget] = useState(false);
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
         console.log(email);
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/send-reset-otp`, { email });

@@ -11,12 +11,17 @@ import gigsRouter from "./routes/gigsRoutes.js"
 import reviewRouter from  "./routes/reviewRouter.js";
 import bookingRouter from "./routes/bookingRouter.js";
 import socketHandler from "./socket/socketHandler.js"
+import Razorpay from "razorpay"
+import paymentRouter from "./routes/paymentRoutes.js"
+import walletRouter from "./routes/walletRoutes.js";
 
 
 env.config()
 const app = express()
 const port = process.env.PORT
 connectDB()
+
+
 
 const server = createServer(app); 
 const io = new Server(server, {
@@ -26,7 +31,6 @@ const io = new Server(server, {
         credentials : true
     }
 });
-
 
 socketHandler(io);
 
@@ -39,11 +43,6 @@ app.use(cors({
 }));
 
 
-import Razorpay from "razorpay"
-import paymentRouter from "./routes/paymentRoutes.js"
-
-
-
 
 export const instance = new Razorpay({
   key_id: process.env.RAZORPAY_API_KEY,
@@ -51,12 +50,16 @@ export const instance = new Razorpay({
 });
 
 
+
+// API EndPoints
+// app.get('/',(req,res)=>res.send("API Working"))
 app.use('/api/auth',authRouter)
 app.use('/api/user',userRouter)
 app.use('/api/gigs',gigsRouter)
 app.use('/booking', bookingRouter);
 app.use('/reviews', reviewRouter)
-app.use("/payment",paymentRouter)
+app.use("/api/wallet", walletRouter);
+app.use("/api/payment",paymentRouter)
 
 server.listen(port,()=>{
     console.log(`Server Stared on PORT:${port}`)

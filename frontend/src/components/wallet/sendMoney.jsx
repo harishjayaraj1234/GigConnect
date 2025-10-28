@@ -14,6 +14,13 @@ const SendMoney = ({onSend}) => {
         setReceiver("")
     }
 
+<<<<<<< HEAD
+=======
+   
+
+
+
+>>>>>>> b0631ab8d75811578626353574088e42e50af8f2
   return (
     <form onSubmit={handleSubmit} className='mb-6'>
         <label className='block mb-2 text-gray-700 font-medium'>

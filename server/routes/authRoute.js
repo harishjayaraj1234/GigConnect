@@ -18,6 +18,4 @@ authRouter.post('/send-reset-otp',sendResetOtp)     //done
 authRouter.post('/reset-password',resetPassword)    //done
 
 
-
-
 export default authRouter

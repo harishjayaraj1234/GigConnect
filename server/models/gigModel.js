@@ -12,7 +12,6 @@ const gigSchema = new mongoose.Schema({
         createdAt: { type: Date, default: Date.now }
 })
 
-
-const gigModel = mongoose.model('gig', gigSchema);
-
-export default gigModel;
+  // The freelancer who posted this gig
+const gigModel = mongoose.model("Gig", gigSchema);
+export default gigModel

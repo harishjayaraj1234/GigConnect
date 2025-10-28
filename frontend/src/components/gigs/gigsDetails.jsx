@@ -1,21 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
 const GigsDetails = () => {
-  const { id } = useParams(); 
-  // const [id, setId] = useState('');
+  const { id } = useParams(); // gig ID from URL
   const [gig, setGig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
 
+
+   async function gigBook(gig){ 
+    try {
+            const id = gig._id;
+            let response = await axios.get(`${import.meta.env.VITE_API_URL}/booking/accept/${id}`,{
+              withCredentials : true
+            });
+            if(!response) {
+                setMessage(response.message);
+            }
+        } catch (error) {
+            setMessage(error.message);
+        }
+    } 
+
+
+
   useEffect(() => {
     const fetchGig = async () => {
-
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/gigs/${id}`);
-        console.log(id+'dssdf')
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/gigs/:${id}`, {
+          withCredentials : true
+        });
+        console.log(res)
         setGig(res.data);
       } catch (err) {
         console.error("Error fetching gig details:", err);
@@ -26,7 +43,7 @@ const GigsDetails = () => {
     };
 
     fetchGig();
-  },[id]);
+  }, [id]);
 
   if (loading) {
     return (
@@ -50,7 +67,7 @@ const GigsDetails = () => {
         {/* Gig Image */}
         <div>
           <img
-            src={gig.image || ""}
+            src={gig.image || "https://via.placeholder.com/600x400"}
             alt={gig.title}
             className="rounded-lg w-full h-80 object-cover shadow-md"
           />
@@ -93,13 +110,13 @@ const GigsDetails = () => {
           <div className="mt-6 flex gap-4">
             <button
               className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
-              onClick={() => alert("Apply functionality coming soon")}
+              onClick={() => gigBook(gig)}
             >
               Apply for Gig
             </button>
             <button
               className="bg-gray-100 text-gray-700 px-5 py-2 rounded-md hover:bg-gray-200 transition"
-              onClick={() => Navigate('')}
+              onClick={() => alert("Message freelancer feature coming soon")}
             >
               Message Freelancer
             </button>

@@ -70,7 +70,19 @@ export const login = async(req,res)=>{
         if(!isMatch){
             return res.status(401).json({success:false,message:"Invalid email or password"})
         }
-        res.cookie('userId', user._id)
+
+        console.log(user._id + "  this is user")
+
+        await res.cookie('userId', user._id, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none':'strict',
+            maxAge: 7*24*60*60*1000   
+        })
+
+        console.log(req.cookies.userId+' temp')
+
+
         const token = jwt.sign(
             { id: user._id },
             process.env.JWT_SECRET,
@@ -82,15 +94,13 @@ export const login = async(req,res)=>{
             sameSite: process.env.NODE_ENV === 'production' ? 'none':'strict',
             maxAge: 7*24*60*60*1000   
         })
-        return res.status(200).json({success:true,message:"User LoggedIn....",_id: user._id}) 
+        return res.status(200).json({success:true,message:"User LoggedIn....",_id: user._id, role : user.role}) 
 
     }catch(error){
         res.status(500).json({success:false,message:"Server error. Please try again later"})
     }
 
 }
-
-
 
 
 export const logout = async(req,res)=>{
