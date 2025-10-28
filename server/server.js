@@ -37,6 +37,7 @@ app.use(cors({credentials:true}))
 // Razorpay logic
 import Razorpay from "razorpay"
 import paymentRouter from "./routes/paymentRoutes.js"
+import walletRouter from "./routes/walletRoutes.js";
 
 
 export const instance = new Razorpay({
@@ -53,6 +54,7 @@ app.use('/api/gigs',gigsRouter)
 app.use('/booking', bookingRouter);
 app.use('/reviews', reviewRouter)
 app.use("/api/payment",paymentRouter)
+app.use("/api/wallet",walletRouter)
 
 server.listen(port,()=>{
     console.log(`Server Stared on PORT:${port}`)
