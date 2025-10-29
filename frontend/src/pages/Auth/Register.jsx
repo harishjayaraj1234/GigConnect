@@ -15,24 +15,24 @@ function Register() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  // handle input change (for text inputs)
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // handle file change (for image input)
+
   const handleFileChange = (e) => {
     setForm({ ...form, profileImage: e.target.files[0] });
   };
 
-  // password strength checker
+
   const isStrongPassword = (password) => {
     const regex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return regex.test(password);
   };
 
-  // handle form submit
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -47,7 +47,7 @@ function Register() {
     if (form.role === "Role") return setMessage("Select your role");
     if (!form.profileImage) return setMessage("Please upload a profile image!");
 
-    // 🔹 Prepare FormData for file + other fields
+ 
     const formData = new FormData();
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key]);
@@ -73,7 +73,7 @@ function Register() {
       else setMessage(error.message);
     }
 
-    setTimeout(() => navigate("/verify-account"), 1000);
+     (role == 'freelancer') ? navigate("/freelancer-dashboard") : navigate("/user-dashboard");
   };
 
   return (

@@ -20,25 +20,30 @@ const Profile = () => {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/user/data`, {
           withCredentials: true,
         });
-
-
-        const completedGig = await axios.get(`${import.meta.env.VITE_API_URL}/booking/all`,{
-           withCredentials: true,
-        })
+      
+      
+        // try {
+        const completedGig = await axios.get(`${import.meta.env.VITE_API_URL}/booking/all`, {
+          withCredentials: true,
+        }); 
 
         let count = 0;
         completedGig.data.bookings.map((d) => {
-          // console.log(d)
+  
           if(d.status == "Completed") count++;  
-
+        
         })
+        // } catch (error) {
 
+        // }
+        
+        // console.log('done')
         
         if (res.data?.success) {
           
-
+          
           const user = res.data.user;
-          setImage(user.profileImage)
+          setImage(user.profileImage || "temp")
           setName(user.name);
           setEmail(user.email);
           setSkills(user.skills);
@@ -57,7 +62,7 @@ const Profile = () => {
 
    return (
     <div className="p-6">
-      {/* Toggle Button */}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={toggleView}
@@ -67,19 +72,19 @@ const Profile = () => {
         </button>
       </div>
 
-      {/* Conditional Rendering */}
+
       {!showEdit ? (
           <div className="flex items-center justify-center max-h-screen bg-gray-100">
           <div className="flex items-center bg-white p-6 rounded-lg shadow-lg w-[600px] space-x-6">
             
-            {/* Left: Profile Image */}
+       
             <img
               src={image || img_url}
               alt="Profile"
               className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 shadow-md"
             />
 
-            {/* Right: Profile Details */}
+     
             <div>
               <h2 className="text-2xl font-semibold mb-3">My Profile</h2>
               <div className="space-y-2 text-gray-700">

@@ -10,8 +10,7 @@ const bookingRouter = express();
 //Booking Gig on click
 bookingRouter.get('/accept/:id', userAuth, async(req, res) => {        
     const gigId = req.params.id;
-    console.log(gigId);
-    
+
     try {
 
         const gig = await gigModel.findOne({ _id : gigId });
@@ -25,7 +24,7 @@ bookingRouter.get('/accept/:id', userAuth, async(req, res) => {
         let amount = gig.budget;
         let status = gig.status;
 
-        console.log(req.cookies.userId)
+    
 
         try {
             const response = new bookingModel({gigId, freelancerId, clientId, amount, status});
@@ -43,42 +42,56 @@ bookingRouter.get('/accept/:id', userAuth, async(req, res) => {
 })
 
 
-
-bookingRouter.get('/all', userAuth, async (req, res) => {
+bookingRouter.get("/all", userAuth, async (req, res) => {
   try {
     const uid = req.cookies.userId;
 
-    const bookings = await bookingModel.find({ freelancerId: uid });
+    if (!uid) {
+      return res.status(401).json({ success: false, message: "Unauthorized user" });
+    }
+
+    const gigIds = await bookingModel.distinct("gigId", { freelancerId: uid });
+
+    const bookings = await Promise.all(
+      gigIds.map(async (gid) => await bookingModel.findOne({ gigId: gid, freelancerId: uid }))
+    );
+
 
     if (!bookings || bookings.length === 0) {
-      return res.status(404).json({ success: false, message: "No Bookings Found!!" });
+      return res.status(200).json({
+        success: true,
+        total: 0,
+        bookings: [],
+        message: "No bookings yet!",
+      });
     }
 
-    const bookingDetailArray = [];
-    const uniqueGigIds = new Set();
+    const uniqueGigIds = [...new Set(bookings.map(b => b.gigId.toString()))];
 
-    for (const booking of bookings) {
-      // Skip duplicates
-      if (uniqueGigIds.has(booking.gigId.toString())) continue;
-      uniqueGigIds.add(booking.gigId.toString());
+    const gigs = await gigModel.find({ _id: { $in: uniqueGigIds } });
 
-      const gigDetail = await gigModel.findById(booking.gigId);
-      if (!gigDetail) continue;
+    const clientIds = [...new Set(gigs.map(g => g.clientId.toString()))];
 
-      const clientName = await userModel.findById(gigDetail.clientId);
-      if (!clientName) continue;
+    const clients = await userModel.find({ _id: { $in: clientIds } });
 
-      const bookingObj = {
-        gigId: gigDetail._id,
-        bookingId : booking._id,
-        name: clientName.name,
-        title: gigDetail.title,
+    const clientMap = new Map(clients.map(c => [c._id.toString(), c.name]));
+    const gigMap = new Map(gigs.map(g => [g._id.toString(), g]));
+
+    const bookingDetailArray = bookings.map((booking) => {
+      const gig = gigMap.get(booking.gigId.toString());
+      if (!gig) return null;
+
+      const clientName = clientMap.get(gig.clientId.toString()) || "Unknown";
+
+      return {
+        gigId: gig._id,
+        bookingId: booking._id,
+        name: clientName,
+        title: gig.title,
         status: booking.status,
-        amount: gigDetail.budget,
+        amount: gig.budget,
       };
-
-      bookingDetailArray.push(bookingObj);
-    }
+    }).filter(Boolean);
 
     res.status(200).json({
       success: true,
@@ -87,10 +100,15 @@ bookingRouter.get('/all', userAuth, async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error in /all route:", error);
-    res.status(500).json({ success: false, message: "Internal server error!" });
+    console.error("Error in /booking/all route:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 });
+
 
 
 
@@ -123,14 +141,6 @@ bookingRouter.put('/status', async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error!" });
   }
 });
-
-
-
-
-
-
-
-
 
 
 

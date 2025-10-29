@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const GigCard = ({ gig, onApply }) => {
+
   const navigate = useNavigate();
   function showDetail(id){
 
@@ -10,6 +11,7 @@ const GigCard = ({ gig, onApply }) => {
 
   return (
     <div className="bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
+      <img src={gig.image || "notfound"} alt="" className="h-40 w-100"/>
       <h2 className="text-xl font-semibold mb-2">{gig.title}</h2>
       <p className="text-gray-600 mb-1">
         <strong>Category:</strong> {gig.category}

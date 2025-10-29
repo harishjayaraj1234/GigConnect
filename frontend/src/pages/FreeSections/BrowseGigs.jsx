@@ -83,13 +83,13 @@ useEffect(() => {
 
    
     const options = {
-        key: key, // Replace with your Razorpay key_id
-        amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        key: key, 
+        amount: amount, 
         currency: 'INR',
         name: 'GigConnect',
         description: 'Test Transaction',
-        order_id: order.id, // This is the order_id created in the backend
-        callback_url: `${import.meta.env.VITE_API_URL}/api/payment/verification`, // Your success URL
+        order_id: order.id, 
+        callback_url: `${import.meta.env.VITE_API_URL}/api/payment/verification`,
         prefill: {
           name: 'Gaurav Kumar',
           email: 'gaurav.kumar@example.com',
