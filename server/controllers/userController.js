@@ -61,8 +61,7 @@ export const getListUsersData = async (req, res) => {
 export const getUserData = async (req,res)=>{
     try{
         const userId = req.params.id || req.cookies.userId; 
-        // const Id = req.params.id
-        console.log("id"+userId);
+       
 
         if (!userId) {
             return res.status(400).json({ success: false, message: "User ID missing!" });

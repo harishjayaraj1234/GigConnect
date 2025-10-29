@@ -2,53 +2,65 @@ import bcrypt from "bcryptjs"
 import jwt from 'jsonwebtoken'
 import userModel from "../models/userModel.js"
 import transporter from "../config/nodemailer.js"
+import cloudinary from "../middleware/upload.js";
+import path from "path";
+
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const register = async (req, res) => {
+  const { name, email, password, role } = req.body;
+  const skills = "";
+
+  if (!name || !email || !password || !role) {
+    return res.status(400).json({ success: false, message: "Missing Details..." });
+  }
+
+  try {
+
+    const profileImagePath = path.join(__dirname, "..", req.file.path);
+    console.log("Uploading to Cloudinary:", profileImagePath);
 
 
-export const register = async(req,res)=>{
-
-    const {name,email,password,role} = req.body
-    const skills = "";
-
-    if(!name || !email || !password || !role){
-        return res.status(400).json({sucess:false,message:"Missing Details..."})
-    }
-    try{
-        const existingUser = await userModel.findOne({email})
-        if(existingUser){
-            return res.status(409).json({success:false,message:"User already exists..."})
-        }
-        const hashedPassword = await bcrypt.hash(password,10)
-
-        const user = new userModel({name,email,password:hashedPassword,role,skills})
-        await user.save()
-        res.cookie('userId', user._id)
-        const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expiresIn:'7d'})
-
-        res.cookie('token',token, {
-            httpOnly:true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none':'strict',
-            maxAge: 7*24*60*60*1000 
-        })
-       
-        // Sending welcome email
-        const mailOptions ={
-            from: process.env.SENDER_EMAIL,
-            to: email,
-            subject: "Welcome to gigConnect",
-            text: `Welcome to gigConnect. Your acccount has been created with email id: ${email}`
-        }
-        
-        await transporter.sendMail(mailOptions)
-
-        return res.status(200).json("User Created Successfully....");
+    const cloudUpload = await cloudinary.uploader.upload(profileImagePath);
+    const profileImage = cloudUpload.secure_url;
+    console.log("Uploaded Image URL:", profileImage);
 
 
-    }catch(error){
-        res.status(500).json({success:false,message:"Server error. Please try again later"})
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ success: false, message: "User already exists..." });
     }
 
-}
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new userModel({ name, email, password: hashedPassword, role, skills, profileImage });
+    await user.save();
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject: "Welcome to gigConnect",
+      text: `Welcome to gigConnect. Your account has been created with email id: ${email}`,
+    };
+    await transporter.sendMail(mailOptions);
+
+    return res.status(200).json("User Created Successfully....");
+  } catch (error) {
+    console.error("Error uploading image or creating user:", error);
+    return res.status(500).json({ success: false, message: "Server error. Please try again later" });
+  }
+};
+
 
 
 

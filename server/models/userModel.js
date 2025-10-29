@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
     verifyOtpExpireAt:{type:Date,default:0},
     isAccountVerified:{type:Boolean,default:false},
     resetOtp:{type:String,default:""},
-    resetOtpExpireAt:{type:Date,default:0}
+    resetOtpExpireAt:{type:Date,default:0},
+    profileImage:{type:String}
 
 })
 

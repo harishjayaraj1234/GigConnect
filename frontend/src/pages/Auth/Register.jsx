@@ -2,7 +2,6 @@ import axios from "axios";
 import { useState } from "react";
 import IdVerify from "./IdVerify";
 import { Link, redirect, useNavigate } from "react-router-dom";
-
 function Register() {
   const [form, setForm] = useState({
     name: "",
@@ -10,14 +9,20 @@ function Register() {
     password: "",
     confirmPassword: "",
     role: "Role",
+    profileImage: null, 
   });
 
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  // handle input change
+  // handle input change (for text inputs)
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // handle file change (for image input)
+  const handleFileChange = (e) => {
+    setForm({ ...form, profileImage: e.target.files[0] });
   };
 
   // password strength checker
@@ -31,53 +36,44 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name) {
-      setMessage("Enter your Name First!");
-      return;
-    }
-
-    if (!form.email) {
-      setMessage("Enter your Email!");
-      return;
-    }
-
-    if (!isStrongPassword(form.password)) {
-      setMessage(
+    if (!form.name) return setMessage("Enter your Name First!");
+    if (!form.email) return setMessage("Enter your Email!");
+    if (!isStrongPassword(form.password))
+      return setMessage(
         "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
       );
-      return;
-    }
+    if (form.password !== form.confirmPassword)
+      return setMessage("Passwords not match!");
+    if (form.role === "Role") return setMessage("Select your role");
+    if (!form.profileImage) return setMessage("Please upload a profile image!");
 
-    if (form.password !== form.confirmPassword) {
-      setMessage("Passwords not match!");
-      return;
-    }
-
-    if (form.role === "Role") {
-      setMessage("Select your role");
-      return;
-    }
+    // 🔹 Prepare FormData for file + other fields
+    const formData = new FormData();
+    Object.keys(form).forEach((key) => {
+      formData.append(key, form[key]);
+    });
 
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, form,{ withCredentials: true });
-        if(response.status == 200){
-          setMessage(response.data);
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/register`,
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
         }
+      );
 
-    } catch (error) {
-      if (error.response) {
-        setMessage(error.response.data.message);
-      } else if (error.request) {
-        setMessage("No response from server. Try again later.");
-      } else {
-        setMessage(error.message);
+      if (response.status === 200) {
+        setMessage(response.data.message || "Registered successfully!");
+        console.log("Image uploaded:", response.data.imageUrl);
       }
-      return;
+    } catch (error) {
+      if (error.response) setMessage(error.response.data.message);
+      else if (error.request) setMessage("No response from server.");
+      else setMessage(error.message);
     }
 
-    setTimeout(() =>{
-        navigate("/verify-account");
-    },1000)
+    setTimeout(() => navigate("/verify-account"), 1000);
   };
 
   return (
@@ -85,8 +81,16 @@ function Register() {
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-md w-96 space-y-4"
+        encType="multipart/form-data" 
       >
         <h2 className="text-2xl font-bold text-center mb-2">Register</h2>
+
+        <input
+          type="file"
+          name="profileImage"
+          accept="image/*"
+          onChange={handleFileChange} 
+        />
 
         <input
           name="name"
@@ -136,7 +140,7 @@ function Register() {
         {message && (
           <p
             className={`text-sm text-center ${
-              message.includes("successful") ? "text-green-600" : "text-red-600"
+              message.includes("success") ? "text-green-600" : "text-red-600"
             }`}
           >
             {message}
