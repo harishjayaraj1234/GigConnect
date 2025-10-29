@@ -1,11 +1,11 @@
+// src/pages/AdminDashboard.jsx
 import React, { useState } from "react";
-import Sidebar from "../components/dashboard/Sidebar";
-import Overview from "./adminSections/Overview";
-import ManageUsers from "./adminSections/ManageUsers";
-import ManageGigs from "./adminSections/ManageGigs";
-import Wallets from "./adminSections/Wallets";
-import Reports from "./adminSections/Reports";
-import Settings from "./adminSections/Settings";
+import Overview from "./AdminSections/Overview";
+import ManageUsers from "./AdminSections/ManageUsers";
+import ManageGigs from "./AdminSections/ManageGigs";
+import Wallets from "./AdminSections/Wallets";
+import Reports from "./AdminSections/Reports";
+import Settings from "./AdminSections/Settings";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");

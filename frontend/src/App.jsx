@@ -14,6 +14,8 @@ import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import PaymentSuccess from "./components/payment/paymentSuccess";
+import Withdraw from "./pages/FreeSections/withdraw";
+import OverView from "./pages/OverviewSection";
 
 function App() {
   const [userRole, setUserRole] = useState(null);
@@ -39,6 +41,7 @@ function App() {
       <Routes>
         {/* Redirect root to Home */}
         <Route path="/" element={<Home />} />
+        <Route path="/overview" element={<OverView/>}/>
 
         {/* 🚀 Role-based Dashboard Routing */}
         <Route
@@ -100,6 +103,12 @@ function App() {
 
         {/* 💬 Chat Route */}
         <Route path="/chat" element={<Chat />} />
+        <Route path="/paymentSuccess" element={<PaymentSuccess/>}/>
+
+        <Route path="/api/wallet/withdraw" element={<Withdraw/>}/>
+
+
+
 
         {/* ❌ 404 Page */}
         <Route

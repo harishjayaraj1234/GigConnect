@@ -133,6 +133,7 @@ function Register() {
           </option>
           <option value="user">User</option>
           <option value="freelancer">Freelancer</option>
+          <option value="admin">Admin</option>
         </select>
 
         {message && (

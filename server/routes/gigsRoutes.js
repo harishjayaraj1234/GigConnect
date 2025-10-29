@@ -1,9 +1,19 @@
+<<<<<<< HEAD
 import express from "express";
 import gigModel from "../models/gigModel.js";
 
 import userAuth from "../middleware/userAuth.js";
 
 const gigsRouter = express.Router();
+=======
+import express from 'express'
+import gigModel from '../models/gigModel.js'
+
+import userAuth from '../middleware/userAuth.js'
+
+
+const gigsRouter = express.Router()
+>>>>>>> 8685df037814285e8694df32842517a96114253e
 
 /** 🔹 Create a new gig (POST /api/gigs) */
 gigsRouter.post("/", async (req, res) => {
@@ -37,12 +47,23 @@ gigsRouter.post("/", async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 8685df037814285e8694df32842517a96114253e
 /** 🔹 Get all gigs for freelancer (GET /api/gigs?freelancer=:id) */
 gigsRouter.get("/", async (req, res) => {
   try {
     const { freelancer } = req.query;
 
+<<<<<<< HEAD
     const gigs = freelancer ? await Gig.find({ freelancer }) : await Gig.find();
+=======
+    const gigs = freelancer
+      ? await Gig.find({ freelancer })
+      : await Gig.find();
+>>>>>>> 8685df037814285e8694df32842517a96114253e
 
     res.status(200).json(gigs);
   } catch (error) {
@@ -54,10 +75,14 @@ gigsRouter.get("/", async (req, res) => {
 /** 🔹 Get single gig by ID (GET /api/gigs/:id) */
 gigsRouter.get("/:id", async (req, res) => {
   try {
+<<<<<<< HEAD
     const gig = await Gig.findById(req.params.id).populate(
       "freelancer",
       "name email"
     );
+=======
+    const gig = await Gig.findById(req.params.id).populate("freelancer", "name email");
+>>>>>>> 8685df037814285e8694df32842517a96114253e
     if (!gig) return res.status(404).json({ message: "Gig not found" });
     res.json(gig);
   } catch (error) {
@@ -69,9 +94,13 @@ gigsRouter.get("/:id", async (req, res) => {
 /** 🔹 Update a gig (PUT /api/gigs/:id) */
 gigsRouter.put("/:id", async (req, res) => {
   try {
+<<<<<<< HEAD
     const updatedGig = await Gig.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
+=======
+    const updatedGig = await Gig.findByIdAndUpdate(req.params.id, req.body, { new: true });
+>>>>>>> 8685df037814285e8694df32842517a96114253e
     res.json({ message: "Gig updated", gig: updatedGig });
   } catch (error) {
     console.error("Error updating gig:", error);
@@ -90,4 +119,10 @@ gigsRouter.delete("/:id", async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 export default gigsRouter;
+=======
+
+
+export default gigsRouter
+>>>>>>> 8685df037814285e8694df32842517a96114253e
