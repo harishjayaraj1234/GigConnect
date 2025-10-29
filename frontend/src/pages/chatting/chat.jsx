@@ -13,7 +13,7 @@ const messageStyle = {
 
 const socket = Socket.io(import.meta.env.VITE_API_URL);
 
-function Chat() {
+function ChattingPage() {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const msgHandler = (msg) => {
@@ -99,4 +99,4 @@ function Chat() {
   );
 }
 
-export default Chat;
+export default ChattingPage;

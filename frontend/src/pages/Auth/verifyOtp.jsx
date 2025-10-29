@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CommonStyle from "../../styles/CommonStyle.module.css";
 
 export default function VerifyOtp() {
   const [otp, setOtp] = useState("");
@@ -27,7 +26,7 @@ export default function VerifyOtp() {
   };
 
   return (
-    <div className={CommonStyle["verify-otp-page"]}>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-md w-96 space-y-4"
