@@ -1,99 +1,93 @@
-import express from 'express'
-import gigModel from '../models/gigModel.js'
+import express from "express";
+import gigModel from "../models/gigModel.js";
 
-import userAuth from '../middleware/userAuth.js'
+import userAuth from "../middleware/userAuth.js";
 
+const gigsRouter = express.Router();
 
-const gigsRouter = express.Router()
+/** 🔹 Create a new gig (POST /api/gigs) */
+gigsRouter.post("/", async (req, res) => {
+  try {
+    const { title, description, price, category, image } = req.body;
 
-//POST         done
-gigsRouter.post('/', userAuth, async(req,res)=>{
-    const  {title, description, category, budget, location} = req.body;
-
-    if(!title || !description || !category || !budget || !location){
-        return res.status(400).json({sucess:false,message:"Missing Details..."});
+    // Validate fields
+    if (!title || !description || !price) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const clientId = await req.cookies.userId;
-    try {
-        const gig = new gigModel({title, description, budget, category, location, clientId});
-        await gig.save();
-        
-        return res.status(200).json({success:true, message : "Gig posted successfully"})
+    // Create new gig
+    const newGig = new gigModel({
+      title,
+      description,
+      price,
+      category,
+      image,
+    });
 
-        
-    } catch (error) {
-       return res.status(500).json({success: false, message : "Server error. Please try again later"});
-    }
-})
+    // Save to MongoDB
+    const savedGig = await newGig.save();
 
+    res.status(201).json({
+      message: "Gig created successfully",
+      gig: savedGig,
+    });
+  } catch (error) {
+    console.error("Error creating gig:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
-//GET           done
-gigsRouter.get('/client', userAuth, async(req,res)=>{
-    try{
-        const gigs = await gigModel.find({clientId: req.body.userId})
-        res.json(gigs)
-    } catch (error) {
-        res.status(500).json({message : error.message});
-    }
-})
+/** 🔹 Get all gigs for freelancer (GET /api/gigs?freelancer=:id) */
+gigsRouter.get("/", async (req, res) => {
+  try {
+    const { freelancer } = req.query;
 
+    const gigs = freelancer ? await Gig.find({ freelancer }) : await Gig.find();
 
-//PUT       done
-gigsRouter.put('/:id', userAuth, async(req,res)=>{
-    try {
-        const updatedGigs = await gigModel.findByIdAndUpdate(req.params.id, req.body, {new:true})
-        res.status(200).json(updatedGigs);
-    } catch (error) {
-        res.status(500).json({message : error.message});
-    }
-})
+    res.status(200).json(gigs);
+  } catch (error) {
+    console.error("Error fetching gigs:", error);
+    res.status(500).json({ message: "Failed to fetch gigs" });
+  }
+});
 
+/** 🔹 Get single gig by ID (GET /api/gigs/:id) */
+gigsRouter.get("/:id", async (req, res) => {
+  try {
+    const gig = await Gig.findById(req.params.id).populate(
+      "freelancer",
+      "name email"
+    );
+    if (!gig) return res.status(404).json({ message: "Gig not found" });
+    res.json(gig);
+  } catch (error) {
+    console.error("Error fetching gig:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
-//PATCH                done
-gigsRouter.patch('/:id/complete',userAuth,async(req,res)=>{
-    try{
-        const gig = await gigModel.findByIdAndDelete(req.params.id, {new:true})
-        res.json(gig)
-    } catch (error) {
-        res.status(500).json({message : error.message});
-    }
-})
+/** 🔹 Update a gig (PUT /api/gigs/:id) */
+gigsRouter.put("/:id", async (req, res) => {
+  try {
+    const updatedGig = await Gig.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.json({ message: "Gig updated", gig: updatedGig });
+  } catch (error) {
+    console.error("Error updating gig:", error);
+    res.status(500).json({ message: "Failed to update gig" });
+  }
+});
 
+/** 🔹 Delete a gig (DELETE /api/gigs/:id) */
+gigsRouter.delete("/:id", async (req, res) => {
+  try {
+    await Gig.findByIdAndDelete(req.params.id);
+    res.json({ message: "Gig deleted" });
+  } catch (error) {
+    console.error("Error deleting gig:", error);
+    res.status(500).json({ message: "Failed to delete gig" });
+  }
+});
 
-gigsRouter.get('/', async(req, res) => {
-    try {
-         const gig = await gigModel.find();
-         if(!gig){
-             res.status(404).json({success : false, message : "No Gig Found!!"});
-         }
-
-         res.status(200).json(gig);
-
-    } catch (error) {
-         res.status(500).json({success: false, message : "internal server error!"});
-    }
-})
-
-
-//Single Gig Information
-gigsRouter.get('/:id', async(req, res) => {
-    try {
-        const gigId = req.params.id;
-        const gig = await gigModel.findOne({_id : gigId});
-
-
-         if(!gig){
-             res.status(404).json({success : false, message : "No Gig Found!!"});
-         }
-
-         res.status(200).json(gig);
-
-    } catch (error) {
-         res.status(500).json({success: false, message : "internal server error!"});
-    }
-})
-
-
-
-export default gigsRouter
+export default gigsRouter;

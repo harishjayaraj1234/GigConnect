@@ -13,6 +13,7 @@ import Home from "./pages/Home";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import PaymentSuccess from "./components/payment/paymentSuccess";
 
 function App() {
   const [userRole, setUserRole] = useState(null);

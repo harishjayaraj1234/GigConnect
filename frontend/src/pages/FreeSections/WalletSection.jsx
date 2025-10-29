@@ -22,18 +22,39 @@ const WalletSection = () => {
     }
   };
 
-  const handleAddFunds = async () => {
-    try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/wallet/add`, {
-        userId,
-        amount: 1000,
-      });
-      fetchWalletDetails();
-      alert("₹1000 added to wallet!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to add funds.");
-    }
+  const handleAddFunds = async (amount) => {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
+      { amount }
+    );
+    const { orderId, key } = res.data;
+
+    const options = {
+      key,
+      amount: amount * 100,
+      Currency: "INR",
+      name: "GigConnect",
+      description: "Wallet Top-up",
+      order_id: orderId,
+      handler: async (response) => {
+        await axios.post("/api/verify-payment", {
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_signature: response.razorpay_signature,
+          amount,
+        });
+        alert(`${amount} added to wallet`);
+      },
+      prefill: {
+        name: "User Name",
+        email: "user@example.com",
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   const handleWithdraw = async () => {

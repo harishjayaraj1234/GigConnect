@@ -1,8 +1,14 @@
-import express from "express"
-import { checkoutPayment } from "../controllers/paymentController.js"
+import express from "express";
+import {
+  checkoutPayment,
+  getKey,
+  verification,
+} from "../controllers/paymentController.js";
 
-const paymentRouter = express.Router()
+const paymentRouter = express.Router();
 
-paymentRouter.post('/checkout',checkoutPayment)
+paymentRouter.post("/create-order", checkoutPayment);
+paymentRouter.get("/getkey", getKey);
+paymentRouter.post("/verification", verification);
 
-export default paymentRouter
+export default paymentRouter;

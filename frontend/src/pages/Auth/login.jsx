@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import CommonStyle from "../../styles/CommonStyle.module.css";
 
 function Login({ setUserRole }) {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -56,7 +57,7 @@ function Login({ setUserRole }) {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className={CommonStyle["login-page"]}>
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-md w-96 space-y-4"

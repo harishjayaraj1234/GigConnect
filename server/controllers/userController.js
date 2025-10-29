@@ -1,7 +1,7 @@
 import userModel from "../models/userModel.js";
 
+// ✅ Update user profile
 export const profileUpdate = async (req, res) => {
-  //done
   try {
     const { name, location, skills, password, role } = req.body;
 
@@ -17,45 +17,51 @@ export const profileUpdate = async (req, res) => {
       { _id: req.cookies.userId },
       { $set: updateData }
     );
+
     console.log(response);
 
     if (response) {
-      res.status(200).json({ success: true, message: "Updated you Profile" });
+      res.status(200).json({ success: true, message: "Updated your Profile" });
     }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
+// ✅ Get list of users (freelancers or clients)
 export const getListUsersData = async (req, res) => {
   try {
     const userId = req.cookies.userId;
-    let user;
-
     const self = await userModel.findById(userId);
-    console.log(self);
-    if (self.role == "user") {
-      user = await userModel.aggregate([{ $match: { role: "freelancer" } }]);
-    } else {
-      user = await userModel.aggregate([{ $match: { role: "user" } }]);
+
+    if (!self) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Logged-in user not found" });
     }
 
-    if (!user) {
-      return res.this
+    const roleToMatch = self.role === "user" ? "freelancer" : "user";
+    const users = await userModel.aggregate([
+      { $match: { role: roleToMatch } },
+    ]);
+
+    if (!users || users.length === 0) {
+      return res
         .status(404)
-        .json({ success: false, message: "user not found..." });
+        .json({ success: false, message: "No users found" });
     }
-    res.status(200).json({ success: true, message: user });
+
+    res.status(200).json({ success: true, users });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
+// ✅ Get single user data
 export const getUserData = async (req, res) => {
   try {
     const userId = req.params.id || req.cookies.userId;
-    // const Id = req.params.id
-    console.log("id" + userId);
+    console.log("id: " + userId);
 
     if (!userId) {
       return res
@@ -66,10 +72,11 @@ export const getUserData = async (req, res) => {
     const user = await userModel.findById(userId);
 
     if (!user) {
-      return res.this
+      return res
         .status(404)
-        .json({ success: false, message: "user not found..." });
+        .json({ success: false, message: "User not found..." });
     }
+
     res.status(200).json({ success: true, user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

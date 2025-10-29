@@ -29,4 +29,8 @@ const Header = ({ user }) => {
   );
 };
 
+<<<<<<< HEAD
 export default Header;
+=======
+export default Header;
+>>>>>>> b0631ab8d75811578626353574088e42e50af8f2

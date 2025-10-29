@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import GigCard from "../../components/Gigs/GigCard";
+import axios from "axios";
 
 const BrowseGigs = () => {
   const [gigs, setGigs] = useState([]);
@@ -56,8 +57,43 @@ const BrowseGigs = () => {
     setFilteredGigs(result);
   };
 
-  const handleApply = (gig) => {
-    alert(`Applied for: ${gig.title}`);
+  const handleApply = async (amount) => {
+    const { data: keydata } = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/payment/getkey`
+    );
+    const { key } = keydata;
+    console.log(key);
+
+    const { data: orderdata } = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
+      {
+        amount: "500",
+      }
+    );
+    const { order } = orderdata;
+    console.log(order);
+    // alert(`Applied for: ${gig.title}`);
+
+    const options = {
+      key: key, // Replace with your Razorpay key_id
+      amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      currency: "INR",
+      name: "GigConnect",
+      description: "Test Transaction",
+      order_id: order.id, // This is the order_id created in the backend
+      callback_url: `${import.meta.env.VITE_API_URL}/api/payment/verification`, // Your success URL
+      prefill: {
+        name: "Gaurav Kumar",
+        email: "gaurav.kumar@example.com",
+        contact: "9999999999",
+      },
+      theme: {
+        color: "#F37254",
+      },
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
   };
 
   return (

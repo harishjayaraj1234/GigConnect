@@ -1,4 +1,3 @@
-// src/pages/AdminDashboard.jsx
 import React, { useState } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
 import Overview from "./adminSections/Overview";
