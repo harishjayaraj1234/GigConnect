@@ -35,75 +35,97 @@ const FreelancerDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <div
-        className={`${
-          isSidebarOpen ? "w-64" : "w-16"
-        } bg-white shadow-md transition-all duration-300`}
-      >
-        <div className="flex items-center justify-between px-4 py-4 border-b">
+  <div className="flex h-screen bg-gray-50 text-gray-800">
+
+    <div
+      className={`${
+        isSidebarOpen ? "w-64" : "w-20"
+      } bg-white shadow-xl border-r border-gray-200 flex flex-col transition-all duration-300`}
+    >
+
+      <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+        <div
+          className={`flex items-center gap-2 transition-all duration-300 ${
+            isSidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 w-0"
+          }`}
+        >
           <h2
-            className={`font-bold text-lg text-blue-600 transition-opacity ${
+            className={`font-bold text-xl text-blue-600 whitespace-nowrap transition-all duration-300 ${
               isSidebarOpen ? "opacity-100" : "opacity-0"
             }`}
           >
             Freelancer
           </h2>
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
         </div>
 
-        <ul className="mt-4 space-y-2">
-          <li
-            className={`flex items-center px-4 py-2 cursor-pointer hover:bg-blue-50 ${
-              activeTab === "browse" ? "bg-blue-100 text-blue-600" : ""
-            }`}
-            onClick={() => setActiveTab("browse")}
-          >
-            <Briefcase className="mr-3" /> {isSidebarOpen && "Browse Gigs"}
-          </li>
-          <li
-            className={`flex items-center px-4 py-2 cursor-pointer hover:bg-blue-50 ${
-              activeTab === "bookings" ? "bg-blue-100 text-blue-600" : ""
-            }`}
-            onClick={() => setActiveTab("bookings")}
-          >
-            <ClipboardList className="mr-3" /> {isSidebarOpen && "My Bookings"}
-          </li>
-          <li
-            className={`flex items-center px-4 py-2 cursor-pointer hover:bg-blue-50 ${
-              activeTab === "wallet" ? "bg-blue-100 text-blue-600" : ""
-            }`}
-            onClick={() => setActiveTab("wallet")}
-          >
-            <Wallet className="mr-3" /> {isSidebarOpen && "Wallet"}
-          </li>
-          <li
-            className={`flex items-center px-4 py-2 cursor-pointer hover:bg-blue-50 ${
-              activeTab === "reviews" ? "bg-blue-100 text-blue-600" : ""
-            }`}
-            onClick={() => setActiveTab("reviews")}
-          >
-            <Star className="mr-3" /> {isSidebarOpen && "Reviews & Ratings"}
-          </li>
-          <li
-            className={`flex items-center px-4 py-2 cursor-pointer hover:bg-blue-50 ${
-              activeTab === "profile" ? "bg-blue-100 text-blue-600" : ""
-            }`}
-            onClick={() => setActiveTab("profile")}
-          >
-            <User className="mr-3" /> {isSidebarOpen && "Profile"}
-          </li>
-        </ul>
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="p-2 rounded-lg hover:bg-gray-100 transition"
+        >
+          <Menu className="h-5 w-5 text-gray-600" />
+        </button>
       </div>
 
-      <div className="flex-1 p-6 overflow-y-auto">{renderContent()}</div>
+
+      <ul className="mt-6 flex-1 space-y-5">
+        {[
+          { id: "browse", label: "Browse Gigs", icon: Briefcase },
+          { id: "bookings", label: "My Bookings", icon: ClipboardList },
+          { id: "wallet", label: "Wallet", icon: Wallet },
+          { id: "reviews", label: "Reviews & Ratings", icon: Star },
+          { id: "profile", label: "Profile", icon: User },
+        ].map(({ id, label, icon: Icon }) => (
+          <li
+            key={id}
+            className={`group flex items-center px-4 py-2.5 mx-2 rounded-lg cursor-pointer transition-colors duration-200 ${
+              activeTab === id
+                ? "bg-blue-100 text-blue-600 font-medium"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
+            onClick={() => setActiveTab(id)}
+          >
+            <Icon
+              className={`mr-3 h-5 w-5 ${
+                activeTab === id ? "text-blue-600" : "text-gray-500"
+              }`}
+            />
+            {isSidebarOpen && (
+              <span className="text-sm tracking-wide">{label}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+
+      <div className="p-4 border-t border-gray-200">
+        <button
+          onClick={() => console.log("Logout")}
+          className="flex items-center gap-3 text-gray-600 hover:text-red-500 transition-colors text-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5m0 14a9 9 0 11-9-9 9 9 0 019 9z"
+            />
+          </svg>
+          {isSidebarOpen && <span>Logout</span>}
+        </button>
+      </div>
     </div>
-  );
+
+    <div className="flex-1 p-6 overflow-y-auto bg-gray-50">
+      <div className="max-w-6xl mx-auto">{renderContent()}</div>
+    </div>
+  </div>
+);
+
 };
 
 export default FreelancerDashboard;

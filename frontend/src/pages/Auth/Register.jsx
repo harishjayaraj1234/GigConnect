@@ -77,34 +77,47 @@ function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-md w-96 space-y-4"
-        encType="multipart/form-data" 
-      >
-        <h2 className="text-2xl font-bold text-center mb-2">Register</h2>
+  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-50">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100 transform transition duration-300 hover:shadow-2xl"
+      encType="multipart/form-data"
+    >
+      <h2 className="text-3xl font-extrabold text-center text-blue-700 mb-6">
+        Create Your Account
+      </h2>
 
+      <div className="flex flex-col items-center space-y-2 mb-4">
+        <label
+          htmlFor="profileImage"
+          className="cursor-pointer bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 transition"
+        >
+          Upload Profile Image
+        </label>
         <input
+          id="profileImage"
           type="file"
           name="profileImage"
           accept="image/*"
-          onChange={handleFileChange} 
+          className="hidden"
+          onChange={handleFileChange}
         />
+      </div>
 
+      <div className="space-y-4">
         <input
           name="name"
           type="text"
-          placeholder="Name"
-          className="w-full p-2 border rounded"
+          placeholder="Full Name"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
           onChange={handleChange}
         />
 
         <input
           name="email"
           type="email"
-          placeholder="Email"
-          className="w-full p-2 border rounded"
+          placeholder="Email Address"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
           onChange={handleChange}
         />
 
@@ -112,7 +125,7 @@ function Register() {
           name="password"
           type="password"
           placeholder="Password"
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
           onChange={handleChange}
         />
 
@@ -120,45 +133,53 @@ function Register() {
           name="confirmPassword"
           type="password"
           placeholder="Confirm Password"
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
           onChange={handleChange}
         />
 
         <select
           name="role"
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition bg-white"
           onChange={handleChange}
           required
         >
-          <option selected disabled>
-            Role
+          <option disabled selected>
+            Select Role
           </option>
           <option value="user">User</option>
           <option value="freelancer">Freelancer</option>
         </select>
+      </div>
 
-        {message && (
-          <p
-            className={`text-sm text-center ${
-              message.includes("success") ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {message}
-          </p>
-        )}
-
-        <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">
-          Register
-        </button>
-
-        <p className="text-sm text-center mt-2">
-          Already have an account?{" "}
-          <Link to="/login" className="text-green-600 underline">
-            Login
-          </Link>
+      {message && (
+        <p
+          className={`mt-3 text-sm text-center font-medium ${
+            message.includes("success") ? "text-blue-600" : "text-red-600"
+          }`}
+        >
+          {message}
         </p>
-      </form>
-    </div>
-  );
+      )}
+
+      <button
+        type="submit"
+        className="w-full mt-5 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition transform hover:scale-[1.02] active:scale-[0.98]"
+      >
+        Register
+      </button>
+
+      <p className="text-sm text-center mt-4 text-gray-600">
+        Already have an account?{" "}
+        <Link
+          to="/login"
+          className="text-blue-600 font-semibold hover:underline"
+        >
+          Login
+        </Link>
+      </p>
+    </form>
+  </div>
+);
+
 }
 export default Register;

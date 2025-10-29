@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { href, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 function ForgotDetails() {
     const navigate = useNavigate();
@@ -34,51 +34,62 @@ function ForgotDetails() {
         }
       }
 
-  
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-8 rounded-lg shadow-md w-96 space-y-4"
-        >
-        <h2 className="text-2xl font-bold text-center mb-2">Forgot Password</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white/90 backdrop-blur-lg p-8 rounded-2xl shadow-xl w-96 space-y-5 "
+    >
+      <h2 className="text-3xl font-bold text-center mb-2 text-blue-700">
+        Forgot Password
+      </h2>
+      <p className="text-sm text-center text-gray-500 mb-4">
+        Reset your account password securely
+      </p>
 
-         <input
-           type="email"
-           placeholder="Enter your Email"
-           className="w-full p-2 border rounded"
-           onChange={(e) => setEmail(e.target.value)}
-           value={email}
-           required
-         />
-         <input
-           type="text"
-           placeholder="Enter OTP"
-           className="w-full p-2 border rounded"
-           onChange={(e) => setOtp(e.target.value)}
-           value={otp}
-           required
-         />
-         <input
-           type="password"
-           placeholder="Enter New Password"
-           className="w-full p-2 border rounded"
-           onChange={(e) => setPassword(e.target.value)}
-           required
-         />
-     
+      <input
+        type="email"
+        placeholder="Enter your Email"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        onChange={(e) => setEmail(e.target.value)}
+        value={email}
+        required
+      />
 
-        {message && (
-          <p className="text-sm text-center text-gray-600">{message}</p>
-        )}
+      <input
+        type="text"
+        placeholder="Enter OTP"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        onChange={(e) => setOtp(e.target.value)}
+        value={otp}
+        required
+      />
 
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
-          Submit
-        </button>
+      <input
+        type="password"
+        placeholder="Enter New Password"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
 
-      </form>
-    </div>
-  );
+      {message && (
+        <p className="text-sm text-center text-gray-600">{message}</p>
+      )}
+
+      <button
+        type="submit"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition duration-300 font-medium"
+      >
+        Submit
+      </button>
+
+      <p className="text-sm text-center mt-3">
+        <Link to="/login" className="text-blue-600 hover:underline">
+          Back to Login
+        </Link>
+      </p>
+    </form>
+);
+
 };
 export default ForgotDetails;
