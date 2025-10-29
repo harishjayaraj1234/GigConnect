@@ -12,8 +12,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import VerifyOtp from "./pages/Auth/verifyOtp";
 import ChattingPage from "./pages/chatting/chat";
 import PaymentSuccess from "./components/payment/paymentSuccess";
-import GigsDetails from "./components/gigs/gigsDetails";
-import EditProfile from "./pages/Auth/EditProfile";
+import EditProfile from '../src/pages/Auth/EditProfile'
+import GigsDetails from '../src/components/gigs/gigsDetails'
+import OverView from "./pages/OverviewSection";
 
 function App() {
   const [userRole, setUserRole] = useState(null);
@@ -44,6 +45,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/overview" element={<OverView/>}/>
 
         {/* redirect based on role */}
         <Route
