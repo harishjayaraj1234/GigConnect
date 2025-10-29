@@ -1,30 +1,40 @@
-// src/components/Sidebar.jsx
 import React from "react";
+import { Link } from "react-router-dom";
 
-const Sidebar = ({ activeTab, setActiveTab }) => {
-  const tabs = [
-    { id: "overview", label: "Overview" },
-    { id: "manageUsers", label: "Manage Users" },
-    { id: "manageGigs", label: "Manage Gigs" },
-    { id: "wallets", label: "Wallets" },
-    { id: "reports", label: "Reports" },
-    { id: "settings", label: "Settings" },
-  ];
+const Sidebar = ({ userType }) => {
+  const menuItems = {
+    freelancer: [
+      { name: "Dashboard", path: "/dashboard" },
+      { name: "My Gigs", path: "/my-gigs" },
+      { name: "Wallet", path: "/wallet" },
+      { name: "Reviews", path: "/reviews" },
+    ],
+    client: [
+      { name: "Dashboard", path: "/dashboard" },
+      { name: "Post a Gig", path: "/post-gig" },
+      { name: "My Projects", path: "/projects" },
+      { name: "Payments", path: "/payments" },
+    ],
+    admin: [
+      { name: "Overview", path: "/dashboard" },
+      { name: "Manage Users", path: "/users" },
+      { name: "Transactions", path: "/transactions" },
+      { name: "Reports", path: "/reports" },
+    ],
+  };
 
   return (
-    <aside style={{ width: "200px", background: "#eee", padding: "20px" }}>
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {tabs.map((tab) => (
-          <li
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              padding: "10px",
-              cursor: "pointer",
-              background: activeTab === tab.id ? "#ccc" : "transparent",
-            }}
-          >
-            {tab.label}
+    <aside className="w-64 bg-white shadow-md">
+      <div className="p-4 text-xl font-bold border-b">Dashboard</div>
+      <ul className="p-4 space-y-2">
+        {menuItems[userType].map((item, index) => (
+          <li key={index}>
+            <Link
+              to={item.path}
+              className="block p-2 rounded hover:bg-blue-100 transition"
+            >
+              {item.name}
+            </Link>
           </li>
         ))}
       </ul>

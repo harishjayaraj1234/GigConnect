@@ -1,37 +1,29 @@
 import React from "react";
-import Header from "../components/dashboard/Header";
-import AdminDashboard from "./AdminDashboard";
+import DashboardLayout from "./DashboardLayout";
 import FreelancerDashboard from "./FreelancerDashboard";
 import ClientDashboard from "./ClientDashboard";
+import AdminDashboard from "./AdminDashboard";
+import { getUserType } from "../../utils/userType";
 
 const Dashboard = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const userType = getUserType(); // e.g. "freelancer" | "client" | "admin"
 
-  if (!user) return <p>Please login</p>;
+  const renderDashboard = () => {
+    switch (userType) {
+      case "freelancer":
+        return <FreelancerDashboard />;
+      case "client":
+        return <ClientDashboard />;
+      case "admin":
+        return <AdminDashboard />;
+      default:
+        return <div>Invalid user type</div>;
+    }
+  };
 
-  switch (user.role) {
-    case "admin":
-      return (
-        <div>
-          <Header user={user} />
-          <AdminDashboard />
-        </div>
-      );
-    case "freelancer":
-      return (
-        <div>
-          <Header user={user} />
-          <FreelancerDashboard />
-        </div>
-      );
-    default:
-      return (
-        <div>
-          <Header user={user} />
-          <ClientDashboard />
-        </div>
-      );
-  }
+  return (
+    <DashboardLayout userType={userType}>{renderDashboard()}</DashboardLayout>
+  );
 };
 
 export default Dashboard;
