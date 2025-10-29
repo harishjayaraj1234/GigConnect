@@ -3,11 +3,10 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 const GigsDetails = () => {
-  const { id } = useParams(); // gig ID from URL
+  const { id } = useParams(); 
   const [gig, setGig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
 
 
    async function gigBook(gig){ 

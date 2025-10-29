@@ -4,6 +4,7 @@ import EditProfile from "../Auth/EditProfile";
 
 const Profile = () => {
   
+  const [image, setImage] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [skills, setSkills] = useState("");
@@ -11,7 +12,7 @@ const Profile = () => {
   const [showEdit, setShowEdit] = useState(false);
   
  
-
+  const img_url = "https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg"
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -32,14 +33,18 @@ const Profile = () => {
 
         })
 
-
+        
         if (res.data?.success) {
+          
+
           const user = res.data.user;
+          setImage(user.profileImage)
           setName(user.name);
           setEmail(user.email);
           setSkills(user.skills);
           setGigsCompleted(count);
         }
+        console.log(res.data.user.profileImage)
       } catch (error) {
         console.error("Error fetching profile:", error);
       }
@@ -52,7 +57,7 @@ const Profile = () => {
 
    return (
     <div className="p-6">
-      {/* 🔄 Toggle Button */}
+      {/* Toggle Button */}
       <div className="flex justify-end mb-4">
         <button
           onClick={toggleView}
@@ -62,18 +67,33 @@ const Profile = () => {
         </button>
       </div>
 
-      {/* 👇 Conditional Rendering */}
+      {/* Conditional Rendering */}
       {!showEdit ? (
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Profile</h2>
-          <div className="bg-white p-6 rounded-lg shadow space-y-2">
-            <p><strong>Name:</strong> {name}</p>
-            <p><strong>Email:</strong> {email}</p>
-            <p><strong>Skills:</strong> {skills}</p>
-            <p><strong>Gig's Completed:</strong> {gigsCompleted}</p>
-            <p><strong>Rating:</strong> 5 ⭐</p>
+          <div className="flex items-center justify-center max-h-screen bg-gray-100">
+          <div className="flex items-center bg-white p-6 rounded-lg shadow-lg w-[600px] space-x-6">
+            
+            {/* Left: Profile Image */}
+            <img
+              src={image || img_url}
+              alt="Profile"
+              className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 shadow-md"
+            />
+
+            {/* Right: Profile Details */}
+            <div>
+              <h2 className="text-2xl font-semibold mb-3">My Profile</h2>
+              <div className="space-y-2 text-gray-700">
+                <p><strong>Name:</strong> {name}</p>
+                <p><strong>Email:</strong> {email}</p>
+                <p><strong>Skills:</strong> {skills}</p>
+                <p><strong>Gig's Completed:</strong> {gigsCompleted}</p>
+                <p><strong>Rating:</strong> ⭐ 5</p>
+              </div>
+            </div>
+            
           </div>
         </div>
+
       ) : (
         <EditProfile />
       )}

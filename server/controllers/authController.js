@@ -4,11 +4,12 @@ import userModel from "../models/userModel.js"
 import transporter from "../config/nodemailer.js"
 import cloudinary from "../middleware/upload.js";
 import path from "path";
-
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
 
 export const register = async (req, res) => {
   const { name, email, password, role } = req.body;

@@ -1,38 +1,65 @@
 import express from 'express'
-import gigModel from '../models/gigModel.js'
-
+import cloudinary from "../middleware/upload.js";
+import upload from '../middleware/multer.js'
 import userAuth from '../middleware/userAuth.js'
-
+import gigModel from '../models/gigModel.js'
 
 const gigsRouter = express.Router()
 
+gigsRouter.post("/", userAuth, upload.single("gigImage"), async (req, res) => {
+  try {
+    const { title, description, category, budget, location } = req.body;
 
-gigsRouter.post('/', userAuth, async(req,res)=>{
-    const  {title, description, category, budget, image, location} = req.body;
 
-    console.log(title, description, category, budget, image, location)
-    if(!title || !description || !category || !budget || !image || !location){
-        return res.status(400).json({sucess:false,message:"Missing Details..."});
+    if (!title || !description || !category || !budget || !location) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing Details...",
+      });
     }
 
-    const clientId = await req.cookies.userId;
-    try {
-        const gig = new gigModel({title, description, category, budget, image, location, clientId});
-        await gig.save();
-        if(gig){
-            return res.status(200).json({success:true, message : "Gig posted successfully"})
-        }
 
-    // Save to MongoDB
-    const savedGig = await newGig.save();
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Image file is required",
+      });
+    }
+
+
+    const uploadResult = await cloudinary.uploader.upload(req.file.path);
+    const imageUrl = uploadResult.secure_url;
+
+
+    const clientId = req.cookies.userId;
+    if (!clientId) {
+      return res.status(401).json({ success: false, message: "Unauthorized user" });
+    }
+
+
+    const gig = new gigModel({
+      title,
+      description,
+      category,
+      budget,
+      location,
+      image: imageUrl,
+      clientId,
+    });
+
+    await gig.save();
 
     res.status(201).json({
-      message: "Gig created successfully",
-      gig: savedGig,
+      success: true,
+      message: "Gig posted successfully",
+      gig,
     });
   } catch (error) {
     console.error("Error creating gig:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
   }
 });
 
