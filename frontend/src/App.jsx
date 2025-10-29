@@ -15,6 +15,7 @@ import ClientDashboard from "./pages/ClientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import PaymentSuccess from "./components/payment/paymentSuccess";
 import Withdraw from "./pages/FreeSections/withdraw";
+import OverView from "./pages/OverviewSection";
 
 function App() {
   const [userRole, setUserRole] = useState(null);
@@ -40,6 +41,7 @@ function App() {
       <Routes>
         {/* Redirect root to Home */}
         <Route path="/" element={<Home />} />
+        <Route path="/overview" element={<OverView/>}/>
 
         {/* 🚀 Role-based Dashboard Routing */}
         <Route
