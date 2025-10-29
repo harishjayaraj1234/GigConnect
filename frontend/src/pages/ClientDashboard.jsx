@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
-import MyGigs from "../components/Gigs/MyGigs";
+//import MyGigs from "../components/Gigs/MyGigs";
 import WalletSection from "../components/Wallet/WalletSection";
 import ReviewsRatings from "../components/Reviews/ReviewsRatings";
 import ProfileSection from "../components/Profile/ProfileSection";
