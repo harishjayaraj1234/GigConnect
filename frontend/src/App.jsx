@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+import VerifyOtp from "./pages/Auth/VerifyOtp";
+import Chat from "./pages/Chatting/Chat";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import Home from "./pages/Home";
@@ -11,9 +13,8 @@ import Home from "./pages/Home";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import VerifyOtp from "./pages/Auth/verifyOtp";
-import ChattingPage from "./pages/chatting/chat";
 import PaymentSuccess from "./components/payment/paymentSuccess";
+import Withdraw from "./pages/FreeSections/withdraw";
 
 function App() {
   const [userRole, setUserRole] = useState(null);
@@ -99,32 +100,22 @@ function App() {
         <Route path="/verify-otp" element={<VerifyOtp />} />
 
         {/* 💬 Chat Route */}
-        <Route path="/chat" element={<ChattingPage/>} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/paymentSuccess" element={<PaymentSuccess/>}/>
+
+        <Route path="/api/wallet/withdraw" element={<Withdraw/>}/>
+
+
+
 
         {/* ❌ 404 Page */}
         <Route
           path="*"
           element={<h2 className="text-center mt-10">404 - Page Not Found</h2>}
         />
-
-
-
-        {/*route for payment */}
-
-        <Route path="/paymentSuccess" element={<PaymentSuccess/>}/>
-
-
-
-
-
       </Routes>
 
       {!hideLayout && <Footer />}
-
-
-
-
-
     </>
   );
 }

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 const WalletSection = () => {
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const userId = localStorage.getItem("userId"); // stored at login
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchWalletDetails();
@@ -24,53 +27,61 @@ const WalletSection = () => {
   }
 
   const handleAddFunds = async (amount) => {
-    const  res = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/create-order`, { amount})
-    const {orderId, key} = res.data
 
+    const {data:keydata} = await axios.get(`${import.meta.env.VITE_API_URL}/api/payment/getkey`)
+    const {key} = keydata
+    console.log(key);
+    
+    
 
+    const {data:orderdata} = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/create-order`,{
+        amount:"500"
+    })
+    const {order} = orderdata
+    console.log(order)
+    // alert(`Applied for: ${gig.title}`);
+
+   
     const options = {
-        key,
-        amount:amount*100,
-        Currency:"INR",
-        name:"GigConnect",
-        description:"Wallet Top-up",
-        order_id:orderId,
-        handler: async(response)=>{
-            await axios.post('/api/verify-payment',{
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                amount
-            })
-            alert(`${amount} added to wallet`)
-        },
+        key: key, // Replace with your Razorpay key_id
+        amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        currency: 'INR',
+        name: 'GigConnect',
+        description: 'Test Transaction',
+        order_id: order.id, // This is the order_id created in the backend
+        callback_url: `${import.meta.env.VITE_API_URL}/api/payment/verification`, // Your success URL
         prefill: {
-            name:"User Name",
-            email: "user@example.com"
+          name: 'Gaurav Kumar',
+          email: 'gaurav.kumar@example.com',
+          contact: '9999999999'
         },
         theme: {
-            color: "#3399cc"
+          color: '#F37254'
         },
-       
-    }
-    const rzp = new window.Razorpay(options)
-    rzp.open()
+      };
 
-  };
-
-  const handleWithdraw = async () => {
-    try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/wallet/withdraw`, {
-        userId,
-        amount: 500,
-      });
-      fetchWalletDetails();
-      alert("₹500 withdrawn successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to withdraw funds.");
+      const rzp = new Razorpay(options);
+      rzp.open();
     }
-  };
+
+//   const handleWithdraw = async () => {
+//     try {
+//       await axios.post(`${import.meta.env.VITE_API_URL}/api/wallet/withdraw`, {
+//         userId,
+//         amount: 500,
+//       });
+//       fetchWalletDetails();
+//       alert("₹500 withdrawn successfully!");
+//     } catch (err) {
+//       console.error(err);
+//       alert("Failed to withdraw funds.");
+//     }
+//   };
+
+   function goToWithdraw(){
+    navigate("/api/wallet/withdraw")
+   }
+
 
   return (
     <div>
@@ -87,12 +98,11 @@ const WalletSection = () => {
           >
             Add Funds
           </button>
-          <button
-            onClick={handleWithdraw}
-            className="bg-gray-600 text-white px-4 py-2 rounded-lg"
-          >
-            Withdraw
-          </button>
+          
+        <button onClick={goToWithdraw} className="bg-blue-600 text-white px-4 py-2 rounded-lg">Withdraw</button>
+          
+         
+          
         </div>
       </div>
 
