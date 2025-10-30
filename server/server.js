@@ -18,7 +18,7 @@ import walletRouter from "./routes/walletRoutes.js";
 
 env.config()
 const app = express()
-const port = process.env.PORT
+const port = process.env.PORT || 8000
 connectDB()
 
 
