@@ -1,19 +1,10 @@
-
 import React from "react";
-import Header from "./HeaderSection";
-import Hero from "./HeroSection";
+import CommonStyle from "../styles/CommonStyle.module.css";
 
 function Home() {
   return (
-   /* Header */
-   <div className="px-2">
-     <Header/>
-     <Hero/>
-    </div>
-
-      
-
-  )
+    <div className={CommonStyle["home-page"]}>Home modification needed</div>
+  );
 }
 
 export default Home;

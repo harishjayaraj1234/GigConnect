@@ -3,6 +3,7 @@ import bookingModel from '../models/bookingModel.js'
 import gigModel from '../models/gigModel.js';
 import userAuth from '../middleware/userAuth.js';
 import userModel from '../models/userModel.js';
+import mongoose from 'mongoose';
 
 const bookingRouter = express();
 
@@ -40,6 +41,37 @@ bookingRouter.get('/accept/:id', userAuth, async(req, res) => {
         res.status(500).json({success: false, message : "internal server error"});
     }
 })
+
+
+bookingRouter.get('/client/workers/:uid', userAuth, async (req, res) => {
+    try {
+      const { uid } = req.params;
+      if(!uid) return res.json('uid is missing')
+      const UserBookings = await bookingModel.find({clientId : new mongoose.Types.ObjectId(uid)});
+      
+      
+      if (UserBookings.length === 0) {
+        return res.status(404).json({ success: false, message: "No gig Found" });
+      }
+
+
+      const workArray = await Promise.all(
+        UserBookings.map(async (booking) => {
+          return await userModel.findById(booking.freelancerId);
+        })
+      );
+      
+      res.json({"UserBookings" : UserBookings , "workers" : workArray})
+
+      
+      
+    } catch (error) {
+      res.json(error)
+    }
+})
+
+
+
 
 
 bookingRouter.get("/all", userAuth, async (req, res) => {

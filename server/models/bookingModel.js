@@ -7,7 +7,6 @@ const bookingSchema = new mongoose.Schema({
     amount: { type: Number, required: true },
     status: { type: String, default: "pending" },
     createdAt: { type: Date, default: Date.now }
-
 });
 
 

@@ -10,11 +10,12 @@ import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import VerifyOtp from "./pages/Auth/verifyOtp";
-import ChattingPage from "./pages/chatting/chat";
+//import ChattingPage from "./pages/chatting/chat";
 import PaymentSuccess from "./components/payment/paymentSuccess";
 import EditProfile from '../src/pages/Auth/EditProfile'
-import GigsDetails from '../src/components/gigs/gigsDetails'
+import GigsDetails from './pages/gigs/gigsDetails'
 import OverView from "./pages/OverviewSection";
+import CreateGig from "./pages/gigs/createGigs";
 
 function App() {
   const [userRole, setUserRole] = useState(null);
@@ -53,7 +54,7 @@ function App() {
           element={
             userRole === "freelancer" ? (
               <Navigate to="/freelancer-dashboard" replace />
-            ) : userRole === "client" ? (
+            ) : userRole === "user" ? (
               <Navigate to="/client-dashboard" replace />
             ) : userRole === "admin" ? (
               <Navigate to="/admin-dashboard" replace />
@@ -79,7 +80,7 @@ function App() {
           path="/freelancer-dashboard/:id"
           element={
             userRole === "freelancer" ? (
-              <GigsDetails />
+              <GigsDetails  who="freelancer"/>
             ) : (
               <Navigate to="/login" replace />
             )
@@ -90,8 +91,19 @@ function App() {
         <Route
           path="/client-dashboard"
           element={
-            userRole === "client" ? (
+            userRole === "user" ? (
               <ClientDashboard />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        <Route
+          path="/client-dashboard/:id"
+          element={
+            userRole === "user" ? (
+               <GigsDetails who="user"/>
             ) : (
               <Navigate to="/login" replace />
             )
@@ -116,9 +128,10 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/update-profile" element={<EditProfile />} />
+        <Route path="/post-gig" element={<CreateGig />} />
 
         {/* Chat */}
-        <Route path="/chat" element={<ChattingPage />} />
+        {/*<Route path="/chat" element={<ChattingPage />} />
 
         {/* Payment */}
         <Route path="/paymentSuccess" element={<PaymentSuccess />} />

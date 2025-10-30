@@ -31,7 +31,6 @@ const Footer = () => {
         </div>
       </div>
       <div>
-
         <p className="py-5 text-sm text-center">
           Copyright @2025 gigconnect.com - All Rights Reserved.
         </p>

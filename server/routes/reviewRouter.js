@@ -7,31 +7,49 @@ import mongoose from 'mongoose';
 const reviewRouter = express.Router();
 
 
-// review posting by clients
-reviewRouter.post('/', userAuth, async(req, res) => {
-    
-    const { rating, comment, bookingId, freelancerId} = req.body;
-    let clientId;
-    clientId = req.cookies.userId;    
- 
-    try {
-        let date = Date.now();
-        const response = await reviewModel({ bookingId, clientId, freelancerId, rating, comment, date })
-        response.save();
+reviewRouter.post('/', userAuth, async (req, res) => {
+  const { rating, comment, bookingId, freelancerId } = req.body;
+  const clientId = req.cookies.userId;
 
-        if(response){
-            res.status(200).json({success : true, message : "Your Review Successfully Posted"})
-        }
-
-    } catch (error) {
-         return res.status(500).json({success: false, message : "Server error. Please try again later"});
+  try {
+    const existingReview = await reviewModel.findOne({ clientId, freelancerId, bookingId });
+    if (existingReview) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already posted a review for this booking.",
+      });
     }
+
+    const date = Date.now();
+    const newReview = new reviewModel({
+      bookingId,
+      clientId,
+      freelancerId,
+      rating,
+      comment,
+      date,
+    });
+
+    await newReview.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Your review has been successfully posted.",
+    });
+  } catch (error) {
+    console.error("Error posting review:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
 });
 
+
 //single booking review
-reviewRouter.get('/get', async(req, res) => {
+reviewRouter.get('/get/:id', async(req, res) => {
     
-    const id = req.body.bookingId;
+    const {id} = req.params;
 
     try {
         const review = await reviewModel.aggregate([ { 
@@ -53,9 +71,9 @@ reviewRouter.get('/get', async(req, res) => {
 
 
 //single freelancer all bookings reviews
-reviewRouter.get('/all', async(req, res) => {
+reviewRouter.get('/all/:id', async(req, res) => {
     
-    const id = req.body.freelancerId;
+    const { id }= req.params;
 
     try {
         const review = await reviewModel.aggregate([ { 

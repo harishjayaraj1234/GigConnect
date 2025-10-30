@@ -1,6 +1,6 @@
 // src/pages/AdminDashboard.jsx
 import React, { useState } from "react";
-import Overview from "./AdminSections/Overview";
+
 import ManageUsers from "./AdminSections/ManageUsers";
 import ManageGigs from "./AdminSections/ManageGigs";
 import Wallets from "./AdminSections/Wallets";

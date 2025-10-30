@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import EditGig from "./EditGig";
 
-const GigsDetails = () => {
+const GigsDetails = (prop) => {
+
+  const navigate = useNavigate();
   const { id } = useParams(); 
-  // const [id, setId] = useState('');
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [gig, setGig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
 
 
   useEffect(() => {
@@ -15,7 +19,6 @@ const GigsDetails = () => {
 
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/gigs/${id}`);
-        console.log(id+'dssdf')
         setGig(res.data);
       } catch (err) {
         console.error("Error fetching gig details:", err);
@@ -27,6 +30,21 @@ const GigsDetails = () => {
 
     fetchGig();
   },[id]);
+
+
+  const deleteGig = async () => {
+      try {
+        const res = await axios.delete(`${import.meta.env.VITE_API_URL}/api/gigs/${id}`);
+        if(!res){
+          alert(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+      navigate('/client-dashboard')
+  }
+
+
 
   if (loading) {
     return (
@@ -46,6 +64,10 @@ const GigsDetails = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
+      <EditGig
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+      />
       <div className="grid md:grid-cols-2 gap-10 items-start">
         {/* Gig Image */}
         <div>
@@ -88,22 +110,40 @@ const GigsDetails = () => {
               </p>
             </div>
           )}
-
-          {/* Buttons */}
-          <div className="mt-6 flex gap-4">
-            <button
-              className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
-              onClick={() => alert("Apply functionality coming soon")}
-            >
-              Apply for Gig
-            </button>
-            <button
-              className="bg-gray-100 text-gray-700 px-5 py-2 rounded-md hover:bg-gray-200 transition"
-              onClick={() => Navigate('')}
-            >
-              Message Freelancer
-            </button>
-          </div>
+          
+          {
+            prop.who === "freelancer" ? (
+              <div className="mt-6 flex gap-4">
+                <button
+                  className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
+                  onClick={() => alert("Apply functionality coming soon")}
+                >
+                  Apply for Gig
+                </button>
+                <button
+                  className="bg-gray-100 text-gray-700 px-5 py-2 rounded-md hover:bg-gray-200 transition"
+                  onClick={() => Navigate('')}
+                >
+                  Message Freelancer
+                </button>
+              </div>
+            ) : (
+              <div className="mt-6 flex gap-4">
+                <button
+                  className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
+                  onClick={() => setIsPopupOpen(true)}
+                >
+                  Edit Gig
+                </button>
+                <button
+                  className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
+                  onClick={() => deleteGig(true)}
+                >
+                  Delete Gig
+                </button>
+              </div>
+            )
+          }    
         </div>
       </div>
     </div>

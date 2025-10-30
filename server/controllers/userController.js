@@ -37,6 +37,7 @@ export const profileUpdate = async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       updateData.password = hashedPassword;
     }
+
     const response = await userModel.updateOne(
       { _id: userId },
       { $set: updateData }
@@ -61,56 +62,54 @@ export const profileUpdate = async (req, res) => {
   }
 };
 
-
-
-
 export const getListUsersData = async (req, res) => {
-    try{
-        const userId = req.cookies.userId;
-        let user;
+  try {
+    const userId = req.cookies.userId;
+    const self = await userModel.findById(userId);
 
-        const self = await userModel.findById(userId);
-        console.log(self);
-        if(self.role == 'user'){
-            user = await userModel.aggregate([{ $match : { role : "freelancer"}}]);
-        }
-        else{
-            user = await userModel.aggregate([{ $match : { role : "user"}}]);
-        }
-
-        if(!user){
-            return res.this.status(404).json({success:false,message:"user not found..."})
-            
-        }
-        res.status(200).json({success:true, message : user});
-
-    }catch(error){
-        res.status(500).json({success:false,message:error.message})
-        
+    if (!self) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Logged-in user not found" });
     }
-}
 
+    const roleToMatch = self.role === "user" ? "freelancer" : "user";
+    const users = await userModel.aggregate([{ $match: { role: roleToMatch } }]);
 
-export const getUserData = async (req,res)=>{
-    try{
-        const userId = req.params.id || req.cookies.userId; 
-       
-
-        if (!userId) {
-            return res.status(400).json({ success: false, message: "User ID missing!" });
-        }
-
-
-        const user = await userModel.findById(userId);
-
-        if(!user){
-            return res.this.status(404).json({success:false,message:"user not found..."})
-            
-        }
-        res.status(200).json({success:true, user})
-
-    }catch(error){
-        res.status(500).json({success:false,message:error.message})
-        
+    if (!users || users.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No users found" });
     }
-}
+
+    res.status(200).json({ success: true, users });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getUserData = async (req, res) => {
+  try {
+    const userId = req.params.id || req.cookies.userId;
+    console.log("id: " + userId);
+
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID missing!" });
+    }
+
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found..." });
+    }
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
