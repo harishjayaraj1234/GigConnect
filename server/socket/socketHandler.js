@@ -1,4 +1,5 @@
 import chatModel from '../models/chatModel.js'
+import userAuth from '../middleware/userAuth.js'
 
 const socketHandler = (io) => {
     io.on("connection", (socket) => {

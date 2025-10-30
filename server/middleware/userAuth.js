@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken'
 
 const userAuth = async(req,res,next)=>{
    const token = req.cookies.token
-   
    if(!token){
       return res.json({success:false,message:"Not Authorized Login again..."})
       
@@ -15,17 +14,20 @@ const userAuth = async(req,res,next)=>{
          
          const user = await userModel.findById(tokenDecode.id);
          if(!user){
-            return res.status(404).json({ success: false, message: "User not found." });
+            return res.status(404).json({ success: false, message: "User not found....." });
          }
          
-         // req.body.userId =  tokenDecode.id
-         req.cookies.userId = await tokenDecode.id
+
+        await res.cookie('userId', tokenDecode.id, {
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none':'strict',
+            maxAge: 7*24*60*60*1000   
+        })
          
       }else{
          return res.json({success:false,message:"Not Authorized..."})
          
       }
-       console.log('done')
        next();
 
     }catch(error){

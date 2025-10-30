@@ -1,8 +1,17 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const GigCard = ({ gig, onApply }) => {
+
+  const navigate = useNavigate();
+  function showDetail(id){
+
+      navigate(`/freelancer-dashboard/${id}`)
+  }
+
   return (
     <div className="bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
+      <img src={gig.image || "notfound"} alt="" className="h-40 w-100"/>
       <h2 className="text-xl font-semibold mb-2">{gig.title}</h2>
       <p className="text-gray-600 mb-1">
         <strong>Category:</strong> {gig.category}
@@ -22,7 +31,9 @@ const GigCard = ({ gig, onApply }) => {
         >
           Apply
         </button>
-        <button className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300">
+        <button className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300"
+          onClick={() => {showDetail(gig._id)}}  
+        >
           View Details
         </button>
       </div>

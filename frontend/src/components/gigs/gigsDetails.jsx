@@ -3,15 +3,35 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 const GigsDetails = () => {
-  const { id } = useParams(); // gig ID from URL
+  const { id } = useParams(); 
   const [gig, setGig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+
+   async function gigBook(gig){ 
+    try {
+            const id = gig._id;
+            let response = await axios.get(`${import.meta.env.VITE_API_URL}/booking/accept/${id}`,{
+              withCredentials : true
+            });
+            if(!response) {
+                setMessage(response.message);
+            }
+        } catch (error) {
+            setMessage(error.message);
+        }
+    } 
+
+
+
   useEffect(() => {
     const fetchGig = async () => {
       try {
-        const res = await axios.get(`https://localhost:4000/api/gigs/:${id}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/gigs/:${id}`, {
+          withCredentials : true
+        });
+        console.log(res)
         setGig(res.data);
       } catch (err) {
         console.error("Error fetching gig details:", err);
@@ -66,7 +86,7 @@ const GigsDetails = () => {
 
           <div className="mb-4">
             <span className="font-semibold text-gray-700">Price:</span>{" "}
-            <span className="text-green-600 font-bold">${gig.price}</span>
+            <span className="text-green-600 font-bold">${gig.budget}</span>
           </div>
 
           {gig.freelancer && (
@@ -89,7 +109,7 @@ const GigsDetails = () => {
           <div className="mt-6 flex gap-4">
             <button
               className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
-              onClick={() => alert("Apply functionality coming soon")}
+              onClick={() => gigBook(gig)}
             >
               Apply for Gig
             </button>

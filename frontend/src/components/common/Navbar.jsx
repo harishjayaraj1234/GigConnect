@@ -15,7 +15,7 @@ const Navbar = ({ logoText }) => {
 
   return (
     <div className="bg-white border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+      <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -35,7 +35,7 @@ const Navbar = ({ logoText }) => {
         </div>
 
         {/* Auth Buttons */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4 p-4">
           {/* Login Button */}
           <Link
             to="/login"
