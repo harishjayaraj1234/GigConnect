@@ -12,9 +12,16 @@ import MyBookings from "./FreeSections/MyBookings";
 import WalletSection from "./FreeSections/WalletSection";
 import ReviewsRatings from "./FreeSections/ReviewsRatings";
 import Profile from "./FreeSections/Profile";
+import axios from "axios";
+import { Navigate, useNavigate } from "react-router-dom";
+
 
 const FreelancerDashboard = () => {
+  
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState("browse");
+  // const [logout, logOut] = useState();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const renderContent = () => {
@@ -33,6 +40,26 @@ const FreelancerDashboard = () => {
         return <BrowseGigs />;
     }
   };
+
+
+ const logOut = async () => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/logout`,
+        {}, 
+        { withCredentials: true }
+      );
+
+      if (res.data.success) { 
+        localStorage.removeItem("userRole"); 
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log("Logout failed:", error);
+    }
+  };
+
+
 
   return (
   <div className="flex h-screen bg-gray-50 text-gray-800">
@@ -98,7 +125,7 @@ const FreelancerDashboard = () => {
 
       <div className="p-4 border-t border-gray-200">
         <button
-          onClick={() => console.log("Logout")}
+          onClick={() => logOut()}
           className="flex items-center gap-3 text-gray-600 hover:text-red-500 transition-colors text-sm"
         >
           <svg
