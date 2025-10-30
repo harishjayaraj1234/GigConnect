@@ -63,6 +63,18 @@ function App() {
           }
         />
 
+        {/* Freelancer Dashboard */}
+        <Route
+          path="/freelancer-dashboard"
+          element={
+            userRole === "freelancer" ? (
+              <FreelancerDashboard />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
         <Route
           path="/freelancer-dashboard/:id"
           element={
