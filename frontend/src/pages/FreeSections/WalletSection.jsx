@@ -24,57 +24,29 @@ const WalletSection = () => {
   };
 
   const handleAddFunds = async () => {
-    if (!amount || amount <= 0) {
-      alert("Enter a valid amount");
-      return;
+   console.log(userId)
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/wallet/deposit`,
+      {
+        userId,
+        amount: 500,
+      },
+      { withCredentials: true } 
+    );
+
+
+    if (response.data.success) {
+      fetchWalletDetails();
+      alert("₹500 Deposit successfully!");
+    } else {
+      alert(response.data.message || "Deposit failed.");
     }
-
-    try {
-      const { data: keyRes } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/payment/getkey`
-      );
-      const key = keyRes.key;
-      const { data: orderRes } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
-        { amount }
-      );
-      const { order } = orderRes;
-
-      const options = {
-        key,
-        amount: amount * 100,
-        currency: "INR",
-        name: "GigConnect",
-        description: "Wallet Top-up",
-        order_id: order.id,
-        handler: async (response) => {
-          await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/payment/verification`,
-            {
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-              userId,
-              amount,
-            }
-          );
-          alert(`₹${amount} added to wallet`);
-          fetchWalletDetails();
-        },
-        prefill: {
-          name: "Freelancer",
-          email: "freelancer@example.com",
-        },
-        theme: { color: "#3399cc" },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (err) {
-      console.error("Error adding funds:", err);
-      alert("Payment failed, please try again.");
-    }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Failed to Deposit funds.");
+  }
+};
 
  const handleWithdraw = async () => {
    console.log(userId)
