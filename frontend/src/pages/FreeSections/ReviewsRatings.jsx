@@ -4,7 +4,7 @@ import axios from "axios";
 const ReviewsRatings = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const userId = localStorage.getItem("userId") || 123456; // stored at login
+  const userId = localStorage.getItem("userId")
 
   useEffect(() => {
     if (userId) {

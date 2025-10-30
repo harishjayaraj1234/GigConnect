@@ -1,69 +1,91 @@
-<<<<<<< HEAD
 import express from "express";
-import gigModel from "../models/gigModel.js";
-
+import cloudinary from "../middleware/upload.js";
+import upload from "../middleware/multer.js";
 import userAuth from "../middleware/userAuth.js";
+import gigModel from "../models/gigModel.js"; // ✅ Import Gig model
 
 const gigsRouter = express.Router();
-=======
-import express from 'express'
-import gigModel from '../models/gigModel.js'
 
-import userAuth from '../middleware/userAuth.js'
-
-
-const gigsRouter = express.Router()
->>>>>>> 8685df037814285e8694df32842517a96114253e
-
-/** 🔹 Create a new gig (POST /api/gigs) */
-gigsRouter.post("/", async (req, res) => {
+/**
+ * 🔹 POST /api/gigs
+ * Create a new gig (only for logged-in users)
+ */
+gigsRouter.post("/", userAuth, upload.single("gigImage"), async (req, res) => {
   try {
-    const { title, description, price, category, image } = req.body;
+    const { title, description, category, budget, location } = req.body;
 
-    // Validate fields
-    if (!title || !description || !price) {
-      return res.status(400).json({ message: "Missing required fields" });
+    // ✅ Check if all required fields are present
+    if (!title || !description || !category || !budget || !location) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing Details...",
+      });
     }
 
-    // Create new gig
-    const newGig = new gigModel({
+    // ✅ Check if image file is uploaded
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Image file is required",
+      });
+    }
+
+    // ✅ Upload image to Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+      folder: "gigconnect/gigImages",
+    });
+    const imageUrl = uploadResult.secure_url;
+
+    // ✅ Get client ID from cookies (user must be authenticated)
+    const clientId = req.cookies.userId;
+    if (!clientId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized user",
+      });
+    }
+
+    // ✅ Create new gig document
+    const gig = new gigModel({
       title,
       description,
-      price,
       category,
-      image,
+      budget,
+      location,
+      image: imageUrl,
+      clientId,
     });
 
-    // Save to MongoDB
-    const savedGig = await newGig.save();
+    // ✅ Save gig to database
+    await gig.save();
 
     res.status(201).json({
-      message: "Gig created successfully",
-      gig: savedGig,
+      success: true,
+      message: "Gig posted successfully",
+      gig,
     });
   } catch (error) {
     console.error("Error creating gig:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
   }
 });
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 8685df037814285e8694df32842517a96114253e
-/** 🔹 Get all gigs for freelancer (GET /api/gigs?freelancer=:id) */
+/**
+ * 🔹 GET /api/gigs
+ * Fetch all gigs or gigs filtered by freelancer ID
+ * Example: /api/gigs?freelancer=12345
+ */
 gigsRouter.get("/", async (req, res) => {
   try {
     const { freelancer } = req.query;
 
-<<<<<<< HEAD
-    const gigs = freelancer ? await Gig.find({ freelancer }) : await Gig.find();
-=======
+    // ✅ If freelancer ID is provided, filter by it; otherwise fetch all gigs
     const gigs = freelancer
-      ? await Gig.find({ freelancer })
-      : await Gig.find();
->>>>>>> 8685df037814285e8694df32842517a96114253e
+      ? await gigModel.find({ freelancer })
+      : await gigModel.find();
 
     res.status(200).json(gigs);
   } catch (error) {
@@ -72,57 +94,69 @@ gigsRouter.get("/", async (req, res) => {
   }
 });
 
-/** 🔹 Get single gig by ID (GET /api/gigs/:id) */
+/**
+ * 🔹 GET /api/gigs/:id
+ * Fetch a single gig by its ID
+ */
 gigsRouter.get("/:id", async (req, res) => {
   try {
-<<<<<<< HEAD
-    const gig = await Gig.findById(req.params.id).populate(
-      "freelancer",
-      "name email"
-    );
-=======
-    const gig = await Gig.findById(req.params.id).populate("freelancer", "name email");
->>>>>>> 8685df037814285e8694df32842517a96114253e
-    if (!gig) return res.status(404).json({ message: "Gig not found" });
-    res.json(gig);
+    const gig = await gigModel.findById(req.params.id);
+
+    if (!gig) {
+      return res.status(404).json({ message: "Gig not found" });
+    }
+
+    res.status(200).json(gig);
   } catch (error) {
     console.error("Error fetching gig:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-/** 🔹 Update a gig (PUT /api/gigs/:id) */
+/**
+ * 🔹 PUT /api/gigs/:id
+ * Update an existing gig by its ID
+ */
 gigsRouter.put("/:id", async (req, res) => {
   try {
-<<<<<<< HEAD
-    const updatedGig = await Gig.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+    const updatedGig = await gigModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, // ✅ Returns the updated document
     });
-=======
-    const updatedGig = await Gig.findByIdAndUpdate(req.params.id, req.body, { new: true });
->>>>>>> 8685df037814285e8694df32842517a96114253e
-    res.json({ message: "Gig updated", gig: updatedGig });
+
+    if (!updatedGig) {
+      return res.status(404).json({ message: "Gig not found" });
+    }
+
+    res.status(200).json({
+      message: "Gig updated successfully",
+      gig: updatedGig,
+    });
   } catch (error) {
     console.error("Error updating gig:", error);
     res.status(500).json({ message: "Failed to update gig" });
   }
 });
 
-/** 🔹 Delete a gig (DELETE /api/gigs/:id) */
+/**
+ * 🔹 DELETE /api/gigs/:id
+ * Delete a gig by its ID
+ */
 gigsRouter.delete("/:id", async (req, res) => {
   try {
-    await Gig.findByIdAndDelete(req.params.id);
-    res.json({ message: "Gig deleted" });
+    const deletedGig = await gigModel.findByIdAndDelete(req.params.id);
+
+    if (!deletedGig) {
+      return res.status(404).json({ message: "Gig not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Gig deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting gig:", error);
     res.status(500).json({ message: "Failed to delete gig" });
   }
 });
 
-<<<<<<< HEAD
 export default gigsRouter;
-=======
-
-
-export default gigsRouter
->>>>>>> 8685df037814285e8694df32842517a96114253e

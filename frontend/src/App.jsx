@@ -3,31 +3,36 @@ import React, { useState, useEffect } from "react";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
-import VerifyOtp from "./pages/Auth/VerifyOtp";
-import Chat from "./pages/Chatting/Chat";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import Home from "./pages/Home";
-
-// Dashboards
 import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import VerifyOtp from "./pages/Auth/verifyOtp";
+//import ChattingPage from "./pages/chatting/chat";
 import PaymentSuccess from "./components/payment/paymentSuccess";
-import Withdraw from "./pages/FreeSections/withdraw";
+import EditProfile from '../src/pages/Auth/EditProfile'
+import GigsDetails from './pages/gigs/gigsDetails'
 import OverView from "./pages/OverviewSection";
 
 function App() {
   const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
 
-  // ✅ Get stored role (persist login after refresh)
+  // load role from localStorage
   useEffect(() => {
     const storedRole = localStorage.getItem("userRole");
     if (storedRole) setUserRole(storedRole);
+    setLoading(false); // done loading
   }, []);
 
-  // ✅ Hide navbar/footer on dashboard pages
+  if (loading) {
+    // prevent redirect flicker
+    return <div className="text-center mt-10 text-gray-600">Loading...</div>;
+  }
+
   const hideLayout =
     userRole &&
     (location.pathname.startsWith("/freelancer-dashboard") ||
@@ -39,43 +44,41 @@ function App() {
       {!hideLayout && <Navbar />}
 
       <Routes>
-        {/* Redirect root to Home */}
         <Route path="/" element={<Home />} />
         <Route path="/overview" element={<OverView/>}/>
 
-        {/* 🚀 Role-based Dashboard Routing */}
+        {/* redirect based on role */}
         <Route
           path="/dashboard"
           element={
             userRole === "freelancer" ? (
               <Navigate to="/freelancer-dashboard" replace />
-            ) : userRole === "client" ? (
+            ) : userRole === "user" ? (
               <Navigate to="/client-dashboard" replace />
             ) : userRole === "admin" ? (
               <Navigate to="/admin-dashboard" replace />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
-        />
-
-        {/* 🧑‍💻 Freelancer Dashboard */}
-        <Route
-          path="/freelancer-dashboard"
-          element={
-            userRole === "freelancer" ? (
-              <FreelancerDashboard />
             ) : (
               <Navigate to="/login" replace />
             )
           }
         />
 
-        {/* 🏢 Client Dashboard */}
+        <Route
+          path="/freelancer-dashboard/:id"
+          element={
+            userRole === "freelancer" ? (
+              <GigsDetails />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        {/* Client Dashboard */}
         <Route
           path="/client-dashboard"
           element={
-            userRole === "client" ? (
+            userRole === "user" ? (
               <ClientDashboard />
             ) : (
               <Navigate to="/login" replace />
@@ -83,7 +86,7 @@ function App() {
           }
         />
 
-        {/* 👑 Admin Dashboard */}
+        {/* Admin Dashboard */}
         <Route
           path="/admin-dashboard"
           element={
@@ -95,22 +98,20 @@ function App() {
           }
         />
 
-        {/* 🔐 Auth Routes */}
+        {/* Auth Routes */}
         <Route path="/login" element={<Login setUserRole={setUserRole} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/update-profile" element={<EditProfile />} />
 
-        {/* 💬 Chat Route */}
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/paymentSuccess" element={<PaymentSuccess/>}/>
+        {/* Chat */}
+        {/*<Route path="/chat" element={<ChattingPage />} />
 
-        <Route path="/api/wallet/withdraw" element={<Withdraw/>}/>
+        {/* Payment */}
+        <Route path="/paymentSuccess" element={<PaymentSuccess />} />
 
-
-
-
-        {/* ❌ 404 Page */}
+        {/* 404 */}
         <Route
           path="*"
           element={<h2 className="text-center mt-10">404 - Page Not Found</h2>}

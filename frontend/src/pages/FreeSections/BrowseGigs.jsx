@@ -1,48 +1,46 @@
 import React, { useState, useEffect } from "react";
-import GigCard from "../../components/Gigs/GigCard";
-import axios from "axios";
+import axios from "axios"
 
 const BrowseGigs = () => {
   const [gigs, setGigs] = useState([]);
   const [filteredGigs, setFilteredGigs] = useState([]);
-
+  const [message, setMessage] = useState("No gig's Found");
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("");
   const [budget, setBudget] = useState("");
 
-  useEffect(() => {
-    const data = [
-      {
-        id: 1,
-        title: "Logo Design",
-        category: "Design",
-        location: "Bangalore",
-        budget: 500,
-        freelancer: "Alice",
-      },
-      {
-        id: 2,
-        title: "Website Development",
-        category: "Development",
-        location: "Mumbai",
-        budget: 2000,
-        freelancer: "Bob",
-      },
-      {
-        id: 3,
-        title: "SEO Optimization",
-        category: "Marketing",
-        location: "Delhi",
-        budget: 1000,
-        freelancer: "Charlie",
-      },
-    ];
-    setGigs(data);
-    setFilteredGigs(data);
-  }, []);
+
+
+useEffect(() => {
+  const fetchGigs = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/gigs`, {
+        withCredentials: true,
+      });
+
+      if (!response.data || response.data.length === 0) {
+        setMessage("No gigs found.");
+      } else {
+        setGigs(response.data);
+        setFilteredGigs(response.data);
+        setMessage("");
+      }
+    } catch (error) {
+      console.error("Error fetching gigs:", error);
+      setMessage("Failed to load gigs. Please try again later.");
+    }
+  };
+
+  fetchGigs();
+}, []); 
+
+
 
   const handleFilter = () => {
     let result = gigs;
+
+    
+  
 
     if (location)
       result = result.filter((gig) =>
@@ -57,30 +55,40 @@ const BrowseGigs = () => {
     setFilteredGigs(result);
   };
 
-  const handleApply =async (amount) => {
+  const handleApply = async (amount) => {
+
+
+    try {
+        const id = amount._id;
+        let response = await axios.get(`${import.meta.env.VITE_API_URL}/booking/accept/${id}`,{
+          withCredentials : true
+        });
+        if(!response) {
+            setMessage(response.message);
+        }
+    } catch (error) {
+        setMessage(error.message);
+    }
+
 
     const {data:keydata} = await axios.get(`${import.meta.env.VITE_API_URL}/api/payment/getkey`)
     const {key} = keydata
     console.log(key);
     
-    
-
     const {data:orderdata} = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/create-order`,{
         amount:"500"
     })
     const {order} = orderdata
-    console.log(order)
-    // alert(`Applied for: ${gig.title}`);
 
    
     const options = {
-        key: key, // Replace with your Razorpay key_id
-        amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        key: key, 
+        amount: amount, 
         currency: 'INR',
         name: 'GigConnect',
         description: 'Test Transaction',
-        order_id: order.id, // This is the order_id created in the backend
-        callback_url: `${import.meta.env.VITE_API_URL}/api/payment/verification`, // Your success URL
+        order_id: order.id, 
+        callback_url: `${import.meta.env.VITE_API_URL}/api/payment/verification`,
         prefill: {
           name: 'Gaurav Kumar',
           email: 'gaurav.kumar@example.com',
@@ -93,7 +101,7 @@ const BrowseGigs = () => {
 
       const rzp = new Razorpay(options);
       rzp.open();
-    }
+  }
 
   return (
     <div className="p-6">
@@ -132,10 +140,10 @@ const BrowseGigs = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredGigs.length > 0 ? (
           filteredGigs.map((gig) => (
-            <GigCard key={gig.id} gig={gig} onApply={handleApply} />
+            <GigCard key={gig._id} gig={gig} onApply={handleApply} />
           ))
         ) : (
-          <p>No gigs found.</p>
+          <p>{message}</p>
         )}
       </div>
     </div>

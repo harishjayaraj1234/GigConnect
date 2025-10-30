@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
 
 const WalletSection = () => {
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
-  const userId = localStorage.getItem("userId"); // stored at login
-
-  const navigate = useNavigate()
+  const [amount, setAmount] = useState("");
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     fetchWalletDetails();
@@ -20,68 +17,89 @@ const WalletSection = () => {
         `${import.meta.env.VITE_API_URL}/api/wallet/${userId}`
       );
       setBalance(response.data.balance);
-      setTransactions(response.data.transactions);
+      setTransactions(response.data.transactions || []);
     } catch (error) {
       console.error("Error fetching wallet:", error);
     }
-  }
+  };
 
-  const handleAddFunds = async (amount) => {
-
-    const {data:keydata} = await axios.get(`${import.meta.env.VITE_API_URL}/api/payment/getkey`)
-    const {key} = keydata
-    console.log(key);
-    
-    
-
-    const {data:orderdata} = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/create-order`,{
-        amount:"500"
-    })
-    const {order} = orderdata
-    console.log(order)
-    // alert(`Applied for: ${gig.title}`);
-
-   
-    const options = {
-        key: key, // Replace with your Razorpay key_id
-        amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-        currency: 'INR',
-        name: 'GigConnect',
-        description: 'Test Transaction',
-        order_id: order.id, // This is the order_id created in the backend
-        callback_url: `${import.meta.env.VITE_API_URL}/api/payment/verification`, // Your success URL
-        prefill: {
-          name: 'Gaurav Kumar',
-          email: 'gaurav.kumar@example.com',
-          contact: '9999999999'
-        },
-        theme: {
-          color: '#F37254'
-        },
-      };
-
-      const rzp = new Razorpay(options);
-      rzp.open();
+  const handleAddFunds = async () => {
+    if (!amount || amount <= 0) {
+      alert("Enter a valid amount");
+      return;
     }
 
-//   const handleWithdraw = async () => {
-//     try {
-//       await axios.post(`${import.meta.env.VITE_API_URL}/api/wallet/withdraw`, {
-//         userId,
-//         amount: 500,
-//       });
-//       fetchWalletDetails();
-//       alert("₹500 withdrawn successfully!");
-//     } catch (err) {
-//       console.error(err);
-//       alert("Failed to withdraw funds.");
-//     }
-//   };
+    try {
+      const { data: keyRes } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/payment/getkey`
+      );
+      const key = keyRes.key;
+      const { data: orderRes } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
+        { amount }
+      );
+      const { order } = orderRes;
 
-   function goToWithdraw(){
-    navigate("/api/wallet/withdraw")
-   }
+      const options = {
+        key,
+        amount: amount * 100,
+        currency: "INR",
+        name: "GigConnect",
+        description: "Wallet Top-up",
+        order_id: order.id,
+        handler: async (response) => {
+          await axios.post(
+            `${import.meta.env.VITE_API_URL}/api/payment/verification`,
+            {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              userId,
+              amount,
+            }
+          );
+          alert(`₹${amount} added to wallet`);
+          fetchWalletDetails();
+        },
+        prefill: {
+          name: "Freelancer",
+          email: "freelancer@example.com",
+        },
+        theme: { color: "#3399cc" },
+      };
 
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Error adding funds:", err);
+      alert("Payment failed, please try again.");
+    }
+  };
+
+ const handleWithdraw = async () => {
+   console.log(userId)
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/wallet/withdraw`,
+      {
+        userId,
+        amount: 500,
+      },
+      { withCredentials: true } 
+    );
+
+
+    if (response.data.success) {
+      fetchWalletDetails();
+      alert("₹500 withdrawn successfully!");
+    } else {
+      alert(response.data.message || "Withdraw failed.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Failed to withdraw funds.");
+  }
+};
 
   return (
     <div>
@@ -91,18 +109,26 @@ const WalletSection = () => {
           Balance:{" "}
           <span className="text-green-600 font-semibold">₹{balance}</span>
         </p>
-        <div className="mt-4 space-x-2">
+        <div className="flex items-center space-x-2 mt-4">
+          <input
+            type="number"
+            placeholder="Enter amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="border rounded-lg px-3 py-2 w-40"
+          />
           <button
             onClick={handleAddFunds}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg"
           >
             Add Funds
           </button>
-          
-        <button onClick={goToWithdraw} className="bg-blue-600 text-white px-4 py-2 rounded-lg">Withdraw</button>
-          
-         
-          
+          <button
+            onClick={handleWithdraw}
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg"
+          >
+            Withdraw ₹500
+          </button>
         </div>
       </div>
 

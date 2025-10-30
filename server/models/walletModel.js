@@ -7,4 +7,4 @@ const walletSchema = new mongoose.Schema({
 
 const walletModel = mongoose.model("wallet",walletSchema)
 
-export default walletModel
+export default walletModel;
