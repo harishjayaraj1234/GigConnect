@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import GigCard from "../gigs/gigCard";
+
 
 const BrowseGigs = () => {
   const [gigs, setGigs] = useState([]);

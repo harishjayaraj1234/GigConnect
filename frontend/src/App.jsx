@@ -3,17 +3,18 @@ import React, { useState, useEffect } from "react";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+import IdVerify from "./pages/Auth/IdVerify";
+import ForgotDetails from "./pages/Auth/ForgotDetails";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import Home from "./pages/Home";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import VerifyOtp from "./pages/Auth/verifyOtp";
 //import ChattingPage from "./pages/chatting/chat";
 import PaymentSuccess from "./components/payment/paymentSuccess";
-import EditProfile from '../src/pages/Auth/EditProfile'
-import GigsDetails from './pages/gigs/gigsDetails'
+import EditProfile from "../src/pages/Auth/EditProfile";
+import GigsDetails from "./pages/gigs/gigsDetails";
 import OverView from "./pages/OverviewSection";
 
 function App() {
@@ -45,7 +46,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/overview" element={<OverView/>}/>
+        <Route path="/overview" element={<OverView />} />
 
         {/* redirect based on role */}
         <Route
@@ -114,7 +115,9 @@ function App() {
         <Route path="/login" element={<Login setUserRole={setUserRole} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/idverify" element={<IdVerify />} />
+        <Route path="/forgot-details" element={<ForgotDetails />} />
         <Route path="/update-profile" element={<EditProfile />} />
 
         {/* Chat */}

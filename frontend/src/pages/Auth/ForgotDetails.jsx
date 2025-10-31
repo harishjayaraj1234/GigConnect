@@ -3,36 +3,34 @@ import axios from "axios";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
 function ForgotDetails() {
-    const navigate = useNavigate();
-    const [otp, setOtp] = useState("");        
-    const [password, setPassword] = useState("");
-    const [email, setEmail] = useState("");
-    const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+  const [otp, setOtp] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
-    const handleSubmit = async(e) => {
-      e.preventDefault();
-        try {
-          
-          const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/reset-password`, {email, otp, password});
-            
-            if(response.status == 200){
-                setMessage(response.data.message);
-                setTimeout(() => {
-                  navigate("/login")
-                }, 1000)
-            }
-        } catch (error) {
-            if(error.response){
-                setMessage(error.response.data.message)
-            }
-            else if(error.request){
-              setMessage("No response from server. Try again later.")
-            }
-            else(
-              setMessage(error.message)
-            )
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/reset-password`,
+        { email, otp, password }
+      );
+
+      if (response.status == 200) {
+        setMessage(response.data.message);
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000);
       }
+    } catch (error) {
+      if (error.response) {
+        setMessage(error.response.data.message);
+      } else if (error.request) {
+        setMessage("No response from server. Try again later.");
+      } else setMessage(error.message);
+    }
+  };
 
   return (
     <form
@@ -89,7 +87,6 @@ function ForgotDetails() {
         </Link>
       </p>
     </form>
-);
-
-};
+  );
+}
 export default ForgotDetails;
