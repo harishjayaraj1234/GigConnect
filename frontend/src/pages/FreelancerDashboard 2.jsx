@@ -13,7 +13,7 @@ import WalletSection from "./FreeSections/WalletSection";
 import ReviewsRatings from "./FreeSections/ReviewsRatings";
 import Profile from "./FreeSections/Profile";
 import axios from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 const FreelancerDashboard = () => {
@@ -66,7 +66,7 @@ const FreelancerDashboard = () => {
 
     <div
       className={`${
-        isSidebarOpen ? "w-64" : "w-20"
+        isSidebarOpen ? "w-64" : ""
       } bg-white shadow-xl border-r border-gray-200 flex flex-col transition-all duration-300`}
     >
 

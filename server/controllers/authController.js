@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs"
 import jwt from 'jsonwebtoken'
 import userModel from "../models/userModel.js"
 import transporter from "../config/nodemailer.js"
-import cloudinary from "../middleware/upload.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -21,13 +20,13 @@ export const register = async (req, res) => {
 
   try {
 
-    const profileImagePath = path.join(__dirname, "..", req.file.path);
-    console.log("Uploading to Cloudinary:", profileImagePath);
+    // const profileImagePath = path.join(__dirname, "..", req.file.path);
+    // console.log("Uploading to Cloudinary:", profileImagePath);
 
 
-    const cloudUpload = await cloudinary.uploader.upload(profileImagePath);
-    const profileImage = cloudUpload.secure_url;
-    console.log("Uploaded Image URL:", profileImage);
+    // const cloudUpload = await cloudinary.uploader.upload(profileImagePath);
+    // const profileImage = cloudUpload.secure_url;
+    // console.log("Uploaded Image URL:", profileImage);
 
 
     const existingUser = await userModel.findOne({ email });
@@ -36,7 +35,7 @@ export const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new userModel({ name, email, password: hashedPassword, role, skills, profileImage });
+    const user = new userModel({ name, email, password: hashedPassword, role, skills});
     await user.save();
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
