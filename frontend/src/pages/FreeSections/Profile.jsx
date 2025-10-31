@@ -20,15 +20,15 @@ const Profile = () => {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/user/data`, {
           withCredentials: true,
         });
-      
-      
+        
         // try {
-        const completedGig = await axios.get(`${import.meta.env.VITE_API_URL}/booking/all`, {
-          withCredentials: true,
-        }); 
-
+          const completedGig = await axios.get(`${import.meta.env.VITE_API_URL}/booking/all`, {
+            withCredentials: true,
+          }); 
+          
+          console.log(completedGig.data.message)
         let count = 0;
-        completedGig.data.bookings.map((d) => {
+        completedGig.data.message.map((d) => {
   
           if(d.status == "Completed") count++;  
         

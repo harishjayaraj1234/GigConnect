@@ -124,6 +124,7 @@ function App() {
         />
 
         {/* Auth Routes */}
+   
         <Route path="/login" element={<Login setUserRole={setUserRole} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

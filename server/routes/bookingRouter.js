@@ -55,6 +55,11 @@ bookingRouter.get("/all", userAuth, async (req, res) => {
 
     const bookings = await bookingModel.find({ freelancerId: uid });
 
+    const uniqueBookings = bookings.filter(
+      (booking, index, self) =>
+        index === self.findIndex((b) => b.gigId.toString() === booking.gigId.toString())
+    );
+
 
     if (!bookings || bookings.length === 0) {
       return res.status(200).json({
@@ -65,7 +70,7 @@ bookingRouter.get("/all", userAuth, async (req, res) => {
       });
     }
 
-    res.status(200).json({success: true, message : bookings})
+    res.status(200).json({success: true, message : uniqueBookings})
 
 
 
