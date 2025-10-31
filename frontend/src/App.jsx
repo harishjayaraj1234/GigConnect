@@ -16,6 +16,7 @@ import EditProfile from '../src/pages/Auth/EditProfile'
 import GigsDetails from './pages/gigs/gigsDetails'
 import OverView from "./pages/OverviewSection";
 import CreateGig from "./pages/gigs/createGigs";
+import ChattingPage from "./pages/Chatting/ChattingPage";
 
 function App() {
   const [userRole, setUserRole] = useState(null);
@@ -131,7 +132,9 @@ function App() {
         <Route path="/post-gig" element={<CreateGig />} />
 
         {/* Chat */}
-        {/*<Route path="/chat" element={<ChattingPage />} />
+        <Route path="client/chat" element={<ChattingPage user={"client"}/>} />
+
+        <Route path="/freelancer/chat" element={<ChattingPage user={"freelancer"}/>} />
 
         {/* Payment */}
         <Route path="/paymentSuccess" element={<PaymentSuccess />} />

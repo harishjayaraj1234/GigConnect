@@ -17,7 +17,7 @@ const EditProfile = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // handle image selection
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -26,7 +26,6 @@ const EditProfile = () => {
     }
   };
 
-  // submit form with image
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -64,7 +63,7 @@ const EditProfile = () => {
           Edit Profile
         </h2>
 
-        {/* Image Preview */}
+  
         <div className="flex justify-center mb-4">
           <label className="cursor-pointer">
             <input

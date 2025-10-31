@@ -15,7 +15,7 @@ const MyBookings = () => {
       
       try{
          const response = await axios.get(
-            `${import.meta.env.VITE_API_URL}/booking/all`,
+            `${import.meta.env.VITE_API_URL}/booking/all/booked`,
             { withCredentials: true }
           );
 
@@ -73,7 +73,7 @@ const MyBookings = () => {
         {bookings.length === 0 ? (
             <tr>
               <td colSpan="5" className="text-center py-8 text-gray-500 text-lg font-medium">
-                🚫 No bookings yet
+                No bookings yet
               </td>
             </tr>
           ) : (

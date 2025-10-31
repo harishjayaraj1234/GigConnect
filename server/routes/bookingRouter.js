@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
 const bookingRouter = express();
 
 
-//Booking Gig on click
+
 bookingRouter.get('/accept/:id', userAuth, async(req, res) => {        
     const gigId = req.params.id;
 
@@ -43,6 +43,48 @@ bookingRouter.get('/accept/:id', userAuth, async(req, res) => {
 })
 
 
+bookingRouter.get("/all", userAuth, async (req, res) => {
+  try {
+
+    const uid = req.cookies.userId;
+
+    if (!uid) {
+      return res.status(401).json({ success: false, message: "Unauthorized user" });
+    }
+
+
+    const bookings = await bookingModel.find({ freelancerId: uid });
+
+
+    if (!bookings || bookings.length === 0) {
+      return res.status(200).json({
+        success: true,
+        total: 0,
+        bookings: [],
+        message: "No bookings yet!",
+      });
+    }
+
+    res.status(200).json({success: true, message : bookings})
+
+
+
+  } catch (error) {
+    console.error("Error in /booking/all route:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+});
+
+
+
+
+
+
+
 bookingRouter.get('/client/workers/:uid', userAuth, async (req, res) => {
     try {
       const { uid } = req.params;
@@ -74,7 +116,7 @@ bookingRouter.get('/client/workers/:uid', userAuth, async (req, res) => {
 
 
 
-bookingRouter.get("/all", userAuth, async (req, res) => {
+bookingRouter.get("/all/booked", userAuth, async (req, res) => {
   try {
     const uid = req.cookies.userId;
 

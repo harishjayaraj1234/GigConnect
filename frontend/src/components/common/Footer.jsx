@@ -1,6 +1,14 @@
 import React from "react";
 
 const Footer = () => {
+
+    console.log(location.pathname === "/client/chat");
+  if(location.pathname === "/client/chat" || location.pathname  === "/freelancer/chat"){
+        return(
+          <>
+          </>
+        )
+  }
   return (
     <div className=" mt-20 bg-white-300 py-6">
       <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] p-10 gap-14 my-10 mt-10 text-sm">

@@ -14,6 +14,7 @@ import WalletSection from "./ClientSection/WalletSection";
 import ReviewsRatings from "./ClientSection/Workers";
 import Profile from "./ClientSection/Profile";
 import Workers from "./ClientSection/Workers";
+import ChattingPage from "./Chatting/ChattingPage";
 
 const ClientDashboard = () => {
 
@@ -48,7 +49,7 @@ const ClientDashboard = () => {
       case "myGigs":
         return <MyGigs />;
       case "chat":
-        return <ChatSection />;
+        return navigate('/client/chat');
       case "wallet":
         return <WalletSection />;
       case "reviews":

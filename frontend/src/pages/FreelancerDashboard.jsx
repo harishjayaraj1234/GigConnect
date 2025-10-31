@@ -5,6 +5,7 @@ import {
   Wallet,
   Star,
   User,
+  MessageSquare,
   Menu,
 } from "lucide-react";
 import BrowseGigs from "./FreeSections/BrowseGigs";
@@ -14,6 +15,7 @@ import ReviewsRatings from "./FreeSections/ReviewsRatings";
 import Profile from "./FreeSections/Profile";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
+import ChattingPage from "./Chatting/ChattingPage";
 
 
 const FreelancerDashboard = () => {
@@ -34,6 +36,8 @@ const FreelancerDashboard = () => {
         return <WalletSection />;
       case "reviews":
         return <ReviewsRatings />;
+      case "chat":
+        return navigate('/freelancer/chat');
       case "profile":
         return <Profile />;
       default:
@@ -100,6 +104,7 @@ const FreelancerDashboard = () => {
           { id: "bookings", label: "My Bookings", icon: ClipboardList },
           { id: "wallet", label: "Wallet", icon: Wallet },
           { id: "reviews", label: "Reviews & Ratings", icon: Star },
+          { id: "chat", label: "Chat Box", icon: MessageSquare },
           { id: "profile", label: "Profile", icon: User },
         ].map(({ id, label, icon: Icon }) => (
           <li

@@ -14,6 +14,7 @@ import socketHandler from "./socket/socketHandler.js"
 import Razorpay from "razorpay"
 import paymentRouter from "./routes/paymentRoutes.js"
 import walletRouter from "./routes/walletRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js"
 
 
 env.config()
@@ -57,6 +58,7 @@ app.use('/api/user',userRouter)
 app.use('/api/gigs',gigsRouter)
 app.use('/booking', bookingRouter);
 app.use('/reviews', reviewRouter)
+app.use("/chat", chatRoutes);
 app.use("/api/wallet", walletRouter);
 app.use("/api/payment",paymentRouter)
 

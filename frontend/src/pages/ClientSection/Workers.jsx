@@ -18,7 +18,6 @@ const Workers = () => {
     }
   }, []);
 
-  // 📦 Fetch worker bookings
   const fetchWorkers = async () => {
     setLoading(true);
     try {
