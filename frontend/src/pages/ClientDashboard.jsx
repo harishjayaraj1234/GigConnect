@@ -6,6 +6,7 @@ import {
   Star,
   User,
   Menu,
+  LogOut,
 } from "lucide-react";
 import MyGigs from "../pages/gigs/allGigs";
 import WalletSection from "./FreeSections/WalletSection";
@@ -103,20 +104,7 @@ const ClientDashboard = () => {
             onClick={() => console.log("Logout")}
             className="flex items-center gap-3 text-gray-600 hover:text-red-500 transition-colors text-sm"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5m0 14a9 9 0 11-9-9 9 9 0 019 9z"
-              />
-            </svg>
+            <LogOut className="h-5 w-5" />
             {isSidebarOpen && <span>Logout</span>}
           </button>
         </div>

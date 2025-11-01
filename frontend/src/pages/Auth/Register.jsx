@@ -10,29 +10,25 @@ function Register() {
     password: "",
     confirmPassword: "",
     role: "Role",
-    profileImage: null, 
+    profileImage: null,
   });
 
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-
   const handleFileChange = (e) => {
     setForm({ ...form, profileImage: e.target.files[0] });
   };
-
 
   const isStrongPassword = (password) => {
     const regex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return regex.test(password);
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,7 +44,6 @@ function Register() {
     if (form.role === "Role") return setMessage("Select your role");
     if (!form.profileImage) return setMessage("Please upload a profile image!");
 
- 
     const formData = new FormData();
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key]);
@@ -73,8 +68,7 @@ function Register() {
       else if (error.request) setMessage("No response from server.");
       else setMessage(error.message);
     }
-
-     (role == 'freelancer') ? navigate("/freelancer-dashboard") : navigate("/user-dashboard");
+    navigate("/login");
   };
 
   return (
@@ -85,99 +79,99 @@ function Register() {
       >
         <h2 className="text-2xl font-bold text-center mb-2">Register</h2>
 
-      <div className="flex flex-col items-center space-y-2 mb-4">
-        <label
-          htmlFor="profileImage"
-          className="cursor-pointer bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 transition"
+        <div className="flex flex-col items-center space-y-2 mb-4">
+          <label
+            htmlFor="profileImage"
+            className="cursor-pointer bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 transition"
+          >
+            Upload Profile Image
+          </label>
+          <input
+            id="profileImage"
+            type="file"
+            name="profileImage"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </div>
+
+        <div className="space-y-4">
+          <input
+            name="name"
+            type="text"
+            placeholder="Full Name"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
+            onChange={handleChange}
+          />
+
+          <input
+            name="email"
+            type="email"
+            placeholder="Email Address"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
+            onChange={handleChange}
+          />
+
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
+            onChange={handleChange}
+          />
+
+          <input
+            name="confirmPassword"
+            type="password"
+            placeholder="Confirm Password"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
+            onChange={handleChange}
+          />
+
+          <select
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition bg-white"
+            required
+          >
+            <option value="Role" disabled>
+              Select Role
+            </option>
+            <option value="user">User</option>
+            <option value="freelancer">Freelancer</option>
+          </select>
+        </div>
+
+        {message && (
+          <p
+            className={`mt-3 text-sm text-center font-medium ${
+              message.includes("success") ? "text-blue-600" : "text-red-600"
+            }`}
+          >
+            {message}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          className="w-full mt-5 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition transform hover:scale-[1.02] active:scale-[0.98]"
         >
-          Upload Profile Image
-        </label>
-        <input
-          id="profileImage"
-          type="file"
-          name="profileImage"
-          accept="image/*"
-          className="hidden"
-          onChange={handleFileChange}
-        />
-      </div>
+          Register
+        </button>
 
-      <div className="space-y-4">
-        <input
-          name="name"
-          type="text"
-          placeholder="Full Name"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
-          onChange={handleChange}
-        />
-
-        <input
-          name="email"
-          type="email"
-          placeholder="Email Address"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
-          onChange={handleChange}
-        />
-
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
-          onChange={handleChange}
-        />
-
-        <input
-          name="confirmPassword"
-          type="password"
-          placeholder="Confirm Password"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
-          onChange={handleChange}
-        />
-
-        <select
-          name="role"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition bg-white"
-          onChange={handleChange}
-          required
-        >
-          <option disabled selected>
-            Select Role
-          </option>
-          <option value="user">User</option>
-          <option value="freelancer">Freelancer</option>
-        </select>
-      </div>
-
-      {message && (
-        <p
-          className={`mt-3 text-sm text-center font-medium ${
-            message.includes("success") ? "text-blue-600" : "text-red-600"
-          }`}
-        >
-          {message}
+        <p className="text-sm text-center mt-4 text-gray-600">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-blue-600 font-semibold hover:underline"
+          >
+            Login
+          </Link>
         </p>
-      )}
-
-      <button
-        type="submit"
-        className="w-full mt-5 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition transform hover:scale-[1.02] active:scale-[0.98]"
-      >
-        Register
-      </button>
-
-      <p className="text-sm text-center mt-4 text-gray-600">
-        Already have an account?{" "}
-        <Link
-          to="/login"
-          className="text-blue-600 font-semibold hover:underline"
-        >
-          Login
-        </Link>
-      </p>
-    </form>
-  </div>
-);
-
+      </form>
+    </div>
+  );
 }
 export default Register;
