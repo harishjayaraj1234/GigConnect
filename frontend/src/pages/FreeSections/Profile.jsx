@@ -7,9 +7,7 @@ const Profile = () => {
   const [image, setImage] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [skills, setSkills] = useState("");
-  const [rattings, setRating] = useState(0)
-  const [gigsCompleted, setGigsCompleted] = useState(0);
+  const [role, setRole] = useState(localStorage.getItem('userRole'));
   const [showEdit, setShowEdit] = useState(false);
   
  
@@ -21,65 +19,13 @@ const Profile = () => {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/user/data`, {
           withCredentials: true,
         });
-        
-        try {
-          const completedGig = await axios.get(`${import.meta.env.VITE_API_URL}/booking/all`, {
-            withCredentials: true,
-          }); 
-          
-         if(completedGig.length === 0 || !completedGig){
-            console.log("404 No completed Gig found");
-         }else{
-            console.log(completedGig.data.message)
-            let count = 0;
-            completedGig.data.message.map((d) => {
-      
-              if(d.status == "Completed") count++;  
-            
-            })
-         }
-        } catch (error) {
-          console.log(error)
-        }
-        
 
-        try {
-            const reviewRes = await axios.get(
-              `${import.meta.env.VITE_API_URL}/reviews/all/${id}`,
-              { withCredentials: true }
-            );  
-
-            if (
-              !reviewRes.data ||
-              !reviewRes.data.success ||
-              reviewRes.data.message.length === 0
-            ) {
-              console.log("404 - No rating found");
-              setRating(0);
-            } else {
-    
-              const allRatings = reviewRes.data.message.map((r) => r.rating);
-              const avg =
-                allRatings.reduce((a, b) => a + b, 0) / allRatings.length;
-              setRating(avg.toFixed(1));
-            }
-        } catch (error) {
-            console.log(error);
-            setRating(0);
-        }
-
-
-
-        
         if (res.data?.success) {
-          
-          
+
           const user = res.data.user;
           setImage(user.profileImage || "temp")
           setName(user.name);
           setEmail(user.email);
-          setSkills(user.skills);
-          setGigsCompleted(count);
         }
         console.log(res.data.user.profileImage)
       } catch (error) {
@@ -106,7 +52,7 @@ const Profile = () => {
 
 
       {!showEdit ? (
-          <div className="flex items-center justify-center max-h-screen bg-gray-100">
+          <div className="flex items-center justify-center max-h-screen ">
           <div className="flex items-center bg-white p-6 rounded-lg shadow-lg w-[600px] space-x-6">
             
        
@@ -118,13 +64,11 @@ const Profile = () => {
 
      
             <div>
-              <h2 className="text-2xl font-semibold mb-3">My Profile</h2>
+              <h2 className="text-2xl font-semibold mb-3">Admin Profile</h2>
               <div className="space-y-2 text-gray-700">
                 <p><strong>Name:</strong> {name}</p>
                 <p><strong>Email:</strong> {email}</p>
-                <p><strong>Skills:</strong> {skills}</p>
-                <p><strong>Gig's Completed:</strong> {gigsCompleted}</p>
-                <p><strong>Rating:</strong> {rattings}</p>
+                <p><strong>Role:</strong> {role}</p>
               </div>
             </div>
             

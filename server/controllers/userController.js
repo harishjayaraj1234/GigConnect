@@ -113,3 +113,38 @@ export const getUserData = async (req, res) => {
   }
 };
 
+export const allUsers = async (req, res) => {
+  try {
+  
+    const users = await userModel.find();
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ success: false, message: "No users found" });
+    }
+
+    res.status(200).json({ success: true, users });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+export const deleteUser = async (req, res) => {
+
+  console.log(req.params.id)
+  try {
+  
+    const { id }= req.params; 
+
+    const users = await userModel.findByIdAndDelete({ _id: id })
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ success: false, message: "No users found" });
+    }
+
+    res.status(200).json({ success: true, message: "User Successfully Deleted" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

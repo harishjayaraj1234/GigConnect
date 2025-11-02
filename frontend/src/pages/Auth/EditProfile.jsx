@@ -100,18 +100,25 @@ const EditProfile = () => {
           </div>
 
           {/* Skills */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Skills
-            </label>
-            <textarea
-              name="skills"
-              value={formData.skills}
-              onChange={handleChange}
-              placeholder="E.g., React, Node.js, MongoDB"
-              className="w-full border border-gray-300 rounded-lg p-2.5 h-24 resize-none focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-          </div>
+          {
+            localStorage.getItem('userRole') !== "admin" ? (
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Skills
+                </label>
+                <textarea
+                  name="skills"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  placeholder="E.g., React, Node.js, MongoDB"
+                  className="w-full border border-gray-300 rounded-lg p-2.5 h-24 resize-none focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+            ) : 
+            (
+                ""
+            )
+          }
 
           {/* Message */}
           {message && (

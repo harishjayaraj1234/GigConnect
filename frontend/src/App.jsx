@@ -132,6 +132,7 @@ function App() {
               (!u_role) ? <Login setUserRole={setUserRole} />
               : (u_role == "freelancer") ? <Navigate to="/freelancer-dashboard" replace />
               : (u_role == "user") ? <Navigate to="/client-dashboard" replace />
+              : (u_role == "admin") ? <Navigate to="/admin-dashboard" replace />
               : <Login setUserRole={setUserRole} />
             } 
         />

@@ -14,7 +14,7 @@ const MyBookings = () => {
     const fetchBooking = async () => {
       
       try{
-         const response = await axios.get(
+          const response = await axios.get(
             `${import.meta.env.VITE_API_URL}/booking/all/booked`,
             { withCredentials: true }
           );
