@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import IdVerify from "./IdVerify";
-import { Link, redirect, useNavigate } from "react-router-dom";
+import { Link, redirect, replace, useNavigate } from "react-router-dom";
 function Register() {
   const [form, setForm] = useState({
     name: "",
@@ -64,6 +64,7 @@ function Register() {
       );
 
       if (response.status === 200) {
+        navigate('/login')
         setMessage(response.data.message || "Registered successfully!");
         console.log("Image uploaded:", response.data.imageUrl);
       }

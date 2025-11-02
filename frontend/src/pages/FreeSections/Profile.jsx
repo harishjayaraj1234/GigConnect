@@ -8,6 +8,7 @@ const Profile = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [skills, setSkills] = useState("");
+  const [rattings, setRating] = useState(0)
   const [gigsCompleted, setGigsCompleted] = useState(0);
   const [showEdit, setShowEdit] = useState(false);
   
@@ -21,23 +22,54 @@ const Profile = () => {
           withCredentials: true,
         });
         
-        // try {
+        try {
           const completedGig = await axios.get(`${import.meta.env.VITE_API_URL}/booking/all`, {
             withCredentials: true,
           }); 
           
-          console.log(completedGig.data.message)
-        let count = 0;
-        completedGig.data.message.map((d) => {
-  
-          if(d.status == "Completed") count++;  
+         if(completedGig.length === 0 || !completedGig){
+            console.log("404 No completed Gig found");
+         }else{
+            console.log(completedGig.data.message)
+            let count = 0;
+            completedGig.data.message.map((d) => {
+      
+              if(d.status == "Completed") count++;  
+            
+            })
+         }
+        } catch (error) {
+          console.log(error)
+        }
         
-        })
-        // } catch (error) {
 
-        // }
-        
-        // console.log('done')
+        try {
+            const reviewRes = await axios.get(
+              `${import.meta.env.VITE_API_URL}/reviews/all/${id}`,
+              { withCredentials: true }
+            );  
+
+            if (
+              !reviewRes.data ||
+              !reviewRes.data.success ||
+              reviewRes.data.message.length === 0
+            ) {
+              console.log("404 - No rating found");
+              setRating(0);
+            } else {
+    
+              const allRatings = reviewRes.data.message.map((r) => r.rating);
+              const avg =
+                allRatings.reduce((a, b) => a + b, 0) / allRatings.length;
+              setRating(avg.toFixed(1));
+            }
+        } catch (error) {
+            console.log(error);
+            setRating(0);
+        }
+
+
+
         
         if (res.data?.success) {
           
@@ -92,7 +124,7 @@ const Profile = () => {
                 <p><strong>Email:</strong> {email}</p>
                 <p><strong>Skills:</strong> {skills}</p>
                 <p><strong>Gig's Completed:</strong> {gigsCompleted}</p>
-                <p><strong>Rating:</strong> ⭐ 5</p>
+                <p><strong>Rating:</strong> {rattings}</p>
               </div>
             </div>
             

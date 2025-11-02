@@ -6,9 +6,8 @@ const Profile = () => {
   const [image, setImage] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [rating, setRating] = useState(0);
   const [skills, setSkills] = useState("");
-  const [totalGigs, setGigsCompleted] = useState();
+  const [totalGigs, setGigsCompleted] = useState(0);
   const [showEdit, setShowEdit] = useState(false);
 
   const img_url =
@@ -19,37 +18,26 @@ const Profile = () => {
       try {
         const id = localStorage.getItem("userId");
 
-         const res = await axios.get(
+   
+        try {
+          const res = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/gigs/my-gigs/${id}`,
-          { withCredentials: true }
-        );
-
-        if(!res){
-           console.log("404 - No rating found");
-          //  setGigsCompleted(0)
-        }else{
-           setGigsCompleted(res.data.gigs.length)
+            { withCredentials: true }
+          );
+        
+          
+          if(res.data && res.data.gigs){
+            setGigsCompleted(res.data.gigs.length)
+          }else{
+            console.log("No gigs found in response.");
+            setGigsCompleted(0);
+          }
+        } catch (error) {
+           setGigsCompleted(0);
+           console.warn("No gigs found");
         }
 
-        const reviewRes = await axios.get(
-          `${import.meta.env.VITE_API_URL}/reviews/all/${id}`,
-          { withCredentials: true }
-        );
 
-        if (
-          !reviewRes.data ||
-          !reviewRes.data.success ||
-          reviewRes.data.message.length === 0
-        ) {
-          console.log("404 - No rating found");
-          setRating(0);
-        } else {
- 
-          const allRatings = reviewRes.data.message.map((r) => r.rating);
-          const avg =
-            allRatings.reduce((a, b) => a + b, 0) / allRatings.length;
-          setRating(avg.toFixed(1));
-        }
 
         const userRes = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/user/data`,
@@ -76,7 +64,12 @@ const Profile = () => {
           setSkills(user.skills);
         }
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+       if (error.response && error.response.status === 404) {
+          setGigsCompleted(0);
+        console.warn("No gigs found");
+      } else {
+        console.error("Error fetching gigs:", error);
+      }
       }
     };
 
@@ -113,9 +106,6 @@ const Profile = () => {
                 </p>
                 <p>
                   <strong>Email:</strong> {email}
-                </p>
-                <p>
-                  <strong>Rating:</strong> ⭐ {rating}
                 </p>
                 <p>
                   <strong>Total Gigs:</strong> {totalGigs}
