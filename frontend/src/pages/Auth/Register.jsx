@@ -13,6 +13,7 @@ function Register() {
   });
 
   const [message, setMessage] = useState("");
+  const [userRole, setUserRole] = useState("")
   const navigate = useNavigate();
 
 
@@ -47,13 +48,14 @@ function Register() {
     if (form.role === "Role") return setMessage("Select your role");
     if (!form.profileImage) return setMessage("Please upload a profile image!");
 
- 
+    await setUserRole(form.role)
     const formData = new FormData();
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key]);
     });
 
     try {
+      setMessage("Please Wait...");
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/auth/register`,
         formData,
@@ -62,9 +64,10 @@ function Register() {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-
       if (response.status === 200) {
-        navigate('/login')
+        
+        await localStorage.setItem("userRole", userRole);
+        navigate('/idverify')
         setMessage(response.data.message || "Registered successfully!");
         console.log("Image uploaded:", response.data.imageUrl);
       }

@@ -1,11 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 function IdVerify() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [type, setType] = useState("email")
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(""); 
+  const [userRole, setUserRole] = useState('');
   const [button , setButtonText] = useState("Send OTP")
   const [placeholder, setPlaceholder] = useState("Enter Your Email")
 
@@ -15,22 +18,26 @@ function IdVerify() {
     if(email.length == 6){
         try {
           const otp = email;
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/verify-account`, { otp },{ withCredentials: true });
-        if(response.status == 200){
-            setMessage(response.data.message);
-            
+          const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/verify-account`, { otp },{ withCredentials: true });
+          if(response.status == 200){
+              setMessage(response.data.message);
+              console.log(response.data.user.role)
+              await localStorage.setItem("userRole", response.data.user.role)
+              navigate('/login')
+              
+              // navigate(`/${response.data.user.role == "user" ? "client" : response.data.user.role == "freelancer" ? "freelancer" : "admin" }-dashboard`)
+          }
+        } catch (error) {
+            if(error.response){
+                setMessage(error.response.data.message)
+            }
+            else if(error.request){
+              setMessage("No response from server. Try again later.")
+            }
+            else(
+              setMessage(error.message)
+            )
         }
-    } catch (error) {
-        if(error.response){
-            setMessage(error.response.data.message)
-        }
-        else if(error.request){
-           setMessage("No response from server. Try again later.")
-        }
-        else(
-          setMessage(error.message)
-        )
-    }
     }else{
       try {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/send-verify-otp`, { email },{ withCredentials: true });
@@ -81,9 +88,9 @@ function IdVerify() {
           {button}
         </button>
 
-        <p className="text-sm text-center mt-2">
+        <p className="text-sm mt-2 text-center">  
           <Link to="/login" className="text-blue-600 underline">
-            Back to Login
+            Skip for Now
           </Link>
         </p>
       </form>

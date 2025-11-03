@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
+import IdVerify from "./pages/Auth/IdVerify";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
@@ -9,7 +10,7 @@ import Home from "./pages/Home";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import VerifyOtp from "./pages/Auth/verifyOtp";
+// import VerifyOtp from "./pages/Auth/verifyOtp";
 import PaymentSuccess from "./components/payment/paymentSuccess";
 import EditProfile from '../src/pages/Auth/EditProfile'
 import GigsDetails from './pages/gigs/gigsDetails'
@@ -21,6 +22,10 @@ function App() {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
+
+
+
+
   // load role from localStorage
   
   var u_role = localStorage.getItem("userRole");
@@ -140,9 +145,10 @@ function App() {
 
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
+        {/* <Route path="/verify-otp" element={<VerifyOtp />} /> */}
         <Route path="/update-profile" element={<EditProfile />} />
         <Route path="/post-gig" element={<CreateGig />} />
+        <Route path="/idverify" element={<IdVerify />} />
 
         {/* Chat */}
         <Route path="client/chat" element={<ChattingPage user={"client"}/>} />
