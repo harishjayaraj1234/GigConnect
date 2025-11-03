@@ -69,7 +69,6 @@ function Register() {
         await localStorage.setItem("userRole", userRole);
         navigate('/idverify')
         setMessage(response.data.message || "Registered successfully!");
-        console.log("Image uploaded:", response.data.imageUrl);
       }
     } catch (error) {
       if (error.response) setMessage(error.response.data.message);

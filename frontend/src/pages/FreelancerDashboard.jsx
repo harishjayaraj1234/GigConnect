@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Briefcase,
   ClipboardList,
@@ -24,6 +24,7 @@ const FreelancerDashboard = () => {
 
   const [activeTab, setActiveTab] = useState("browse");
   // const [logout, logOut] = useState();
+  const [isVerify, setVerification] = useState(false); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const renderContent = () => {
@@ -44,6 +45,26 @@ const FreelancerDashboard = () => {
         return <BrowseGigs />;
     }
   };
+
+    useEffect(() => {
+        const verficationCheck = async () => {
+
+              try {
+                const userRes = await axios.get(
+                  `${import.meta.env.VITE_API_URL}/api/user/data`,
+                  { withCredentials: true }
+                );
+                if (userRes.data?.success) {
+                  const user = userRes.data.user;
+                  setVerification(user.isVerified)
+                }
+              } catch (error) {
+                console.error("Error fetching gigs:", error);
+              }
+
+        }
+        verficationCheck();
+    },[])
 
 
  const logOut = async () => {
@@ -81,11 +102,11 @@ const FreelancerDashboard = () => {
           }`}
         >
           <h2
-            className={`font-bold text-xl text-blue-600 whitespace-nowrap transition-all duration-300 ${
+            className={`font-bold text-xl text-blue-600 whitespace-nowrap d-flex transition-all duration-300 ${
               isSidebarOpen ? "opacity-100" : "opacity-0"
             }`}
           >
-            Freelancer
+            Freelancer <img src={isVerify === true ? "../../public/verify.png" : ""} style={{margin : "4.8px", height: "20px"}}/>
           </h2>
         </div>
 

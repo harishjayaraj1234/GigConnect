@@ -6,7 +6,9 @@ const Profile = () => {
   
   const [image, setImage] = useState("");
   const [name, setName] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
   const [email, setEmail] = useState("");
+  const [isVerify, setVerification] = useState(false); 
   const [role, setRole] = useState(localStorage.getItem('userRole'));
   const [showEdit, setShowEdit] = useState(false);
   
@@ -25,6 +27,7 @@ const Profile = () => {
           const user = res.data.user;
           setImage(user.profileImage || "temp")
           setName(user.name);
+          setVerification(user.isVerified)
           setEmail(user.email);
         }
         console.log(res.data.user.profileImage)
@@ -36,10 +39,27 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
+    useEffect(() => {
+
+      if (isVerify) {
+
+        setShowPopup(true);
+
+      }
+    }, [isVerify]);
+
+
+
  const toggleView = () => setShowEdit((prev) => !prev);
 
    return (
-    <div className="p-6">
+    <div className="p-6 relative">
+
+       {!showPopup && (
+        <div className="absolute top-4 left-4 bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-2 rounded-lg shadow-lg animate-fade-in">
+          Your account is not verified yet! <a href="/idverify"><button>Verify Now</button></a>
+        </div>
+      )}
 
       <div className="flex justify-end mb-4">
         <button
@@ -64,9 +84,9 @@ const Profile = () => {
 
      
             <div>
-              <h2 className="text-2xl font-semibold mb-3">Admin Profile</h2>
+              <h2 className="text-2xl font-semibold mb-3">Freelancer Profile</h2>
               <div className="space-y-2 text-gray-700">
-                <p><strong>Name:</strong> {name}</p>
+                <p><strong>Name:</strong> {name} <img src={isVerify === true ? "../../public/verify.png" : ""} style={{margin : "3px", height: "20px",display: "inline"}}/></p>
                 <p><strong>Email:</strong> {email}</p>
                 <p><strong>Role:</strong> {role}</p>
               </div>

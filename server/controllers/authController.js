@@ -136,82 +136,95 @@ export const logout = async (req, res) => {
       .json({ success: false, message: "Internal server error" });
   }
 };
+var servOtp;
+
+export const sendVerifyOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("Email received:", email);
 
 
+    const user = await userModel.findOne({ email });
 
-    
-export const sendVerifyOtp = async(req, res)=>{
-    try{
-        
-        const {email} = req.body
-        const userId = req.cookies.userId;
-        
-        console.log(req.cookies.userId)     
-        const user = await userModel.findById(userId)
-        if(user.email == email){
-
-            if(user.isAccountVerified){
-                return res.json({sucess:false,message:"Account already verified...."})
-            }
-            const otp = String(Math.floor(100000 + Math.random()*900000))
-            user.verifyOtp = otp
-            
-            user.verifyOtpExpireAt = Date.now()+24*60*60*1000
-
-
-            const mailOption = {
-                from: process.env.SENDER_EMAIL,
-                to:user.email,
-                subject: "Account Verification OTP",
-                text: `Your OTP is ${otp}. Verify your account using this OTP.`
-
-            }
-            await transporter.sendMail(mailOption)
-            await user.save()
-            return res.json({sucess:true,message:"Verification OTP Sent on Email...."})
-        }else{
-            return res.status(404).json({success:false, message: "Enter correct Email.."})
-        }
-    }catch(error){ 
-        res.status(500).json({success: false, message : "internal server error"});
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found!" });
     }
-}
 
-
-export const verifyEmail = async(req,res)=>{
-    const userId = req.cookies.userId;
-    const {otp} = req.body
-
-    if(!userId || !otp){
-        return res.json({sucess:false,message:"Missing Details..."})
-
+    if (user.isAccountVerified) {
+      return res.json({ success: false, message: "Account already verified...." });
     }
-    try{
-        const user = await userModel.findById(userId)
-        if(!user){
-            return res.json({sucess:false,message:"User not found..."})
-        }
-
-        if(user.verifyOtp == '' || user.verifyOtp != otp){
-            return res.json({sucess:false,message:"Invalid OTP..."})
-        }
-        
-        if(user.verifyOtpExpireAt<Date.now()){
-            return res.json({sucess:false,message:"OTP Expired..."})
-
-        }
-        user.isAccountVerified = true
-        user.verifyOtp = ''
-        user.verifyOtpExpireAt = 0
-        await user.save()
-        return res.json({success:true,message:"Email Verified Successfully.."})
 
 
-    }catch(error){
-        res.json({sucess:false,message:error})
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    user.verifyOtp = otp;
+    servOtp = otp;
+    user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
 
+
+    const mailOption = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: "Account Verification OTP",
+      text: `Your OTP is ${otp}. Verify your account using this OTP.`,
+    };
+
+    console.log("Generated OTP:", otp);
+
+    await transporter.sendMail(mailOption);
+    await user.save();
+
+    return res.json({ success: true, message: "Verification OTP Sent on Email...." });
+  } catch (error) {
+    console.error("Error in sendVerifyOtp:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+
+export const verifyEmail = async (req, res) => {
+  const userId = req.cookies.userId;
+  const { otp } = req.body;
+
+  console.log("Client OTP:", otp);
+  console.log("Server OTP:", servOtp);
+
+  if (!userId || !otp) {
+    return res.json({ success: false, message: "Missing details..." });
+  }
+
+  try {
+    if (otp != servOtp) {
+      return res.json({ success: false, message: "Invalid OTP..." });
     }
-}
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { isVerified: true },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.json({ success: false, message: "User not found..." });
+    }
+
+    servOtp = null;
+
+    return res.json({
+      success: true,
+      message: "Email Verified Successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Verification Error:", error);
+    return res.json({
+      success: false,
+      message: "Server error during verification.",
+      error: error.message,
+    });
+  }
+};
+
 
 
 //Check if user is authenticated

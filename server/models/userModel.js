@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
     bio: String,
     skills: [String],
     profileImage: String,
+    isVerified: {type : Boolean, default : false}
   },
   { timestamps: true }
 );

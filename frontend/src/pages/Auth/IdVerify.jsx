@@ -21,11 +21,10 @@ function IdVerify() {
           const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/verify-account`, { otp },{ withCredentials: true });
           if(response.status == 200){
               setMessage(response.data.message);
-              console.log(response.data.user.role)
-              await localStorage.setItem("userRole", response.data.user.role)
-              navigate('/login')
+              const who = await localStorage.getItem("userRole")
+              // navigate('/login')
               
-              // navigate(`/${response.data.user.role == "user" ? "client" : response.data.user.role == "freelancer" ? "freelancer" : "admin" }-dashboard`)
+              navigate(`/${who == "user" ? "client" : who == "freelancer" ? "freelancer" : "admin" }-dashboard`)
           }
         } catch (error) {
             if(error.response){
