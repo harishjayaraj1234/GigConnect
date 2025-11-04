@@ -57,7 +57,7 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-auto py-10">
+    <div className="flex justify-center items-center h-auto">
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           Edit Profile
@@ -100,18 +100,25 @@ const EditProfile = () => {
           </div>
 
           {/* Skills */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Skills
-            </label>
-            <textarea
-              name="skills"
-              value={formData.skills}
-              onChange={handleChange}
-              placeholder="E.g., React, Node.js, MongoDB"
-              className="w-full border border-gray-300 rounded-lg p-2.5 h-24 resize-none focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-          </div>
+          {
+            localStorage.getItem('userRole') !== "admin" ? (
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Skills
+                </label>
+                <textarea
+                  name="skills"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  placeholder="E.g., React, Node.js, MongoDB"
+                  className="w-full border border-gray-300 rounded-lg p-2.5 h-24 resize-none focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+            ) : 
+            (
+                ""
+            )
+          }
 
           {/* Message */}
           {message && (

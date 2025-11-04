@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
+import IdVerify from "./pages/Auth/IdVerify";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
@@ -9,8 +10,7 @@ import Home from "./pages/Home";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import VerifyOtp from "./pages/Auth/verifyOtp";
-//import ChattingPage from "./pages/chatting/chat";
+// import VerifyOtp from "./pages/Auth/verifyOtp";
 import PaymentSuccess from "./components/payment/paymentSuccess";
 import EditProfile from '../src/pages/Auth/EditProfile'
 import GigsDetails from './pages/gigs/gigsDetails'
@@ -23,15 +23,21 @@ function App() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
 
+
+
+
   // load role from localStorage
+  
+  var u_role = localStorage.getItem("userRole");
+
   useEffect(() => {
-    const storedRole = localStorage.getItem("userRole");
+    const storedRole = u_role;
     if (storedRole) setUserRole(storedRole);
     setLoading(false); // done loading
   }, []);
 
   if (loading) {
-    // prevent redirect flicker
+
     return <div className="text-center mt-10 text-gray-600">Loading...</div>;
   }
 
@@ -124,12 +130,25 @@ function App() {
         />
 
         {/* Auth Routes */}
-        <Route path="/login" element={<Login setUserRole={setUserRole} />} />
+  
+        <Route 
+            path="/login" 
+            element={
+              (!u_role) ? <Login setUserRole={setUserRole} />
+              : (u_role == "freelancer") ? <Navigate to="/freelancer-dashboard" replace />
+              : (u_role == "user") ? <Navigate to="/client-dashboard" replace />
+              : (u_role == "admin") ? <Navigate to="/admin-dashboard" replace />
+              : <Login setUserRole={setUserRole} />
+            } 
+        />
+
+
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
+        {/* <Route path="/verify-otp" element={<VerifyOtp />} /> */}
         <Route path="/update-profile" element={<EditProfile />} />
         <Route path="/post-gig" element={<CreateGig />} />
+        <Route path="/idverify" element={<IdVerify />} />
 
         {/* Chat */}
         <Route path="client/chat" element={<ChattingPage user={"client"}/>} />

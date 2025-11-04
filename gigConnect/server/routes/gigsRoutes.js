@@ -67,16 +67,17 @@ gigsRouter.post("/", userAuth, upload.single("gigImage"), async (req, res) => {
 // Mygig
 gigsRouter.get("/my-gigs/:id", async (req, res) => {
   const { id } = req.params;
-
+  
   try {
-
+    
     const gigs = await gigModel.find({ clientId: new mongoose.Types.ObjectId(id) });
-
+    
     if (!gigs || gigs.length === 0) {
+      console.log('donedondon')
       return res.status(404).json({ success: false, message: "No gigs found for this client" });
+    }else{
+      res.status(200).json({ success: true, gigs });
     }
-
-    res.status(200).json({ success: true, gigs });
   } catch (error) {
     console.error("Error fetching gigs:", error);
     res.status(500).json({ success: false, message: "Server error" });

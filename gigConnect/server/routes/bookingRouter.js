@@ -55,6 +55,11 @@ bookingRouter.get("/all", userAuth, async (req, res) => {
 
     const bookings = await bookingModel.find({ freelancerId: uid });
 
+    const uniqueBookings = bookings.filter(
+      (booking, index, self) =>
+        index === self.findIndex((b) => b.gigId.toString() === booking.gigId.toString())
+    );
+
 
     if (!bookings || bookings.length === 0) {
       return res.status(200).json({
@@ -65,7 +70,7 @@ bookingRouter.get("/all", userAuth, async (req, res) => {
       });
     }
 
-    res.status(200).json({success: true, message : bookings})
+    res.status(200).json({success: true, message : uniqueBookings})
 
 
 
@@ -238,6 +243,105 @@ bookingRouter.get('/:bookingId', async(req, res) => {            //  showing sin
     }  
     
 })
+
+
+
+bookingRouter.get("/admin/all", async (req, res) => {
+  try {
+    // Fetch all bookings (no user restriction)
+    const bookings = await bookingModel.find();
+
+    if (!bookings || bookings.length === 0) {
+      return res.status(200).json({
+        success: true,
+        total: 0,
+        bookings: [],
+        message: "No bookings yet!",
+      });
+    }
+
+    // Collect unique gigIds and clientIds
+    const gigIds = [...new Set(bookings.map(b => b.gigId.toString()))];
+    const freelancerIds = [...new Set(bookings.map(b => b.freelancerId.toString()))];
+    const clientIds = [...new Set(bookings.map(b => b.clientId.toString()))];
+
+    // Fetch related data
+    const gigs = await gigModel.find({ _id: { $in: gigIds } });
+    const clients = await userModel.find({ _id: { $in: clientIds } });
+    const freelancers = await userModel.find({ _id: { $in: freelancerIds } });
+
+    // Create quick lookup maps
+    const gigMap = new Map(gigs.map(g => [g._id.toString(), g]));
+    const clientMap = new Map(clients.map(c => [c._id.toString(), c.name]));
+    const freelancerMap = new Map(freelancers.map(f => [f._id.toString(), f.name]));
+
+    // Merge everything neatly
+    const bookingDetailArray = bookings.map((booking) => {
+      const gig = gigMap.get(booking.gigId.toString());
+      const clientName = clientMap.get(booking.clientId.toString()) || "Unknown Client";
+      const freelancerName = freelancerMap.get(booking.freelancerId.toString()) || "Unknown Freelancer";
+
+      return {
+        bookingId: booking._id,
+        gigId: booking.gigId,
+        title: gig ? gig.title : "Untitled Gig",
+        clientName,
+        freelancerName,
+        amount: booking.amount || (gig ? gig.budget : 0),
+        status: booking.status,
+        createdAt: booking.createdAt,
+      };
+    });
+
+    // Send response
+    res.status(200).json({
+      success: true,
+      total: bookingDetailArray.length,
+      bookings: bookingDetailArray,
+    });
+
+  } catch (error) {
+    console.error("Error in /booking/admin/all route:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+});
+
+
+
+bookingRouter.delete("/admin/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const bookings = await bookingModel.findByIdAndDelete(id);
+
+
+    if (!bookings) {
+      return res.status(404).json({
+        success: true,
+        total: 0,
+        bookings: [],
+        message: "No booking Find!",
+      });
+    }
+
+    res.status(200).json({success: true, message : "Booking Deleted Successfully"})
+
+
+
+  } catch (error) {
+    console.error("Error in /booking/all route:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+});
+
 
 
 

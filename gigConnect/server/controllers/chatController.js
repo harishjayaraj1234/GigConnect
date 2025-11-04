@@ -3,19 +3,20 @@ import chatModel from "../models/chatModel.js";
 
 export const sendMessage = async (req, res) => {
   try {
-    const { bookingId, senderId, message } = req.body;
+    const { bookingId, senderId, text } = req.body.data;
 
-    if (!bookingId || !senderId || !message) {
+    if (!bookingId || !senderId || !text) {
       return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
-    const newMsg = await chatModel.create({ bookingId, senderId, message });
+    const newMsg = await chatModel({ bookingId, senderId, text });
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: "Message sent successfully",
       data: newMsg,
     });
+
   } catch (error) {
     console.error("Error sending message:", error);
     return res.status(500).json({

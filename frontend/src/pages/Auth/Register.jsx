@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import IdVerify from "./IdVerify";
-import { Link, redirect, useNavigate } from "react-router-dom";
+import { Link, redirect, replace, useNavigate } from "react-router-dom";
 function Register() {
   const [form, setForm] = useState({
     name: "",
@@ -13,6 +13,7 @@ function Register() {
   });
 
   const [message, setMessage] = useState("");
+  const [userRole, setUserRole] = useState("")
   const navigate = useNavigate();
 
 
@@ -47,13 +48,14 @@ function Register() {
     if (form.role === "Role") return setMessage("Select your role");
     if (!form.profileImage) return setMessage("Please upload a profile image!");
 
- 
+    await setUserRole(form.role)
     const formData = new FormData();
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key]);
     });
 
     try {
+      setMessage("Please Wait...");
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/auth/register`,
         formData,
@@ -62,10 +64,11 @@ function Register() {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-
       if (response.status === 200) {
+        
+        await localStorage.setItem("userRole", userRole);
+        navigate('/idverify')
         setMessage(response.data.message || "Registered successfully!");
-        console.log("Image uploaded:", response.data.imageUrl);
       }
     } catch (error) {
       if (error.response) setMessage(error.response.data.message);

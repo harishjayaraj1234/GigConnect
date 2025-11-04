@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useInsertionEffect, useState } from "react";
+import { UNSAFE_withHydrateFallbackProps, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Briefcase,
@@ -23,6 +23,28 @@ const ClientDashboard = () => {
 
   const [activeTab, setActiveTab] = useState("myGigs");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isVerify, setVerification] = useState(false); 
+
+
+  useEffect(() => {
+      const verficationCheck = async () => {
+
+            try {
+              const userRes = await axios.get(
+                `${import.meta.env.VITE_API_URL}/api/user/data`,
+                { withCredentials: true }
+              );
+              if (userRes.data?.success) {
+                const user = userRes.data.user;
+                setVerification(user.isVerified)
+              }
+            } catch (error) {
+              console.error("Error fetching gigs:", error);
+            }
+
+      }
+      verficationCheck();
+  },[])
 
 
 
@@ -79,11 +101,11 @@ const ClientDashboard = () => {
             }`}
           >
             <h2
-              className={`font-bold text-xl text-blue-600 whitespace-nowrap transition-all duration-300 ${
+              className={`font-bold text-xl text-blue-600 d-flex whitespace-nowrap transition-all duration-300 ${
                 isSidebarOpen ? "opacity-100" : "opacity-0"
               }`}
             >
-              Client
+              Client <img src={isVerify === true ? "../../public/verify.png" : ""} style={{margin : "4.8px", height: "20px"}}/>
             </h2>
           </div>
 

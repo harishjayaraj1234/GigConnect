@@ -5,10 +5,11 @@ import EditProfile from "../Auth/EditProfile";
 const Profile = () => {
   const [image, setImage] = useState("");
   const [name, setName] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
   const [email, setEmail] = useState("");
-  const [rating, setRating] = useState(0);
   const [skills, setSkills] = useState("");
-  const [totalGigs, setGigsCompleted] = useState();
+  const [totalGigs, setGigsCompleted] = useState(0);
+  const [isVerify, setVerification] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
 
   const img_url =
@@ -19,38 +20,23 @@ const Profile = () => {
       try {
         const id = localStorage.getItem("userId");
 
-         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/gigs/my-gigs/${id}`,
-          { withCredentials: true }
-        );
+        // Fetch gigs
+        try {
+          const res = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/gigs/my-gigs/${id}`,
+            { withCredentials: true }
+          );
 
-        if(!res){
-           console.log("404 - No rating found");
-          //  setGigsCompleted(0)
-        }else{
-           setGigsCompleted(res.data.gigs.length)
+          if (res.data && res.data.gigs) {
+            setGigsCompleted(res.data.gigs.length);
+          } else {
+            setGigsCompleted(0);
+          }
+        } catch {
+          setGigsCompleted(0);
         }
 
-        const reviewRes = await axios.get(
-          `${import.meta.env.VITE_API_URL}/reviews/all/${id}`,
-          { withCredentials: true }
-        );
-
-        if (
-          !reviewRes.data ||
-          !reviewRes.data.success ||
-          reviewRes.data.message.length === 0
-        ) {
-          console.log("404 - No rating found");
-          setRating(0);
-        } else {
- 
-          const allRatings = reviewRes.data.message.map((r) => r.rating);
-          const avg =
-            allRatings.reduce((a, b) => a + b, 0) / allRatings.length;
-          setRating(avg.toFixed(1));
-        }
-
+        // Fetch user
         const userRes = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/user/data`,
           { withCredentials: true }
@@ -73,20 +59,43 @@ const Profile = () => {
           setImage(user.profileImage || img_url);
           setName(user.name);
           setEmail(user.email);
+          setVerification(user.isVerified);
           setSkills(user.skills);
         }
+
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+        console.error("Error fetching profile:", error);
+        setLoading(false);
       }
     };
 
     fetchProfileData();
   }, []);
 
+
+
+   useEffect(() => {
+
+    if (isVerify) {
+
+      setShowPopup(true);
+
+    }
+  }, [isVerify]);
+
+  
+
   const toggleView = () => setShowEdit((prev) => !prev);
 
   return (
-    <div className="p-6">
+    <div className="p-1 relative">
+
+      {!showPopup && (
+        <div className="absolute top-4 left-4 bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-2 rounded-lg shadow-lg animate-fade-in">
+          Your account is not verified yet! <a href="/idverify"  className="bg-yellow-300 text-blue px-2 py-1 m-1 rounded-lg"><button>Verify Now</button></a>
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={toggleView}
@@ -97,7 +106,7 @@ const Profile = () => {
       </div>
 
       {!showEdit ? (
-        <div className="flex items-center justify-center max-h-screen bg-gray-100">
+        <div className="flex items-center justify-center max-h-screen">
           <div className="flex items-center bg-white p-6 rounded-lg shadow-lg w-[600px] space-x-6">
             <img
               src={image || img_url}
@@ -106,16 +115,24 @@ const Profile = () => {
             />
 
             <div>
-              <h2 className="text-2xl font-semibold mb-3">My Profile</h2>
+              <h2 className="text-2xl font-semibold mb-3">Client Profile</h2>
               <div className="space-y-2 text-gray-700">
                 <p>
-                  <strong>Name:</strong> {name}
+                  <strong>Name:</strong> {name}{" "}
+                  {isVerify && (
+                    <img
+                      src="../../public/verify.png"
+                      alt="verified"
+                      style={{
+                        margin: "4px",
+                        height: "20px",
+                        display: "inline",
+                      }}
+                    />
+                  )}
                 </p>
                 <p>
                   <strong>Email:</strong> {email}
-                </p>
-                <p>
-                  <strong>Rating:</strong> ⭐ {rating}
                 </p>
                 <p>
                   <strong>Total Gigs:</strong> {totalGigs}

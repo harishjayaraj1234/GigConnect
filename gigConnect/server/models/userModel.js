@@ -12,7 +12,12 @@ const userSchema = new mongoose.Schema(
     },
     bio: String,
     skills: [String],
+<<<<<<< HEAD:gigConnect/server/models/userModel.js
 //  profileImage: String,
+=======
+    profileImage: String,
+    isVerified: {type : Boolean, default : false}
+>>>>>>> 38afd0be3e5af8f199784db5d9b1a8e51ae0347a:server/models/userModel.js
   },
   { timestamps: true }
 );

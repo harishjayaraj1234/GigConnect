@@ -13,6 +13,53 @@ const GigsDetails = (prop) => {
   const [error, setError] = useState("");
 
 
+    const handleApply = async (amount) => {
+  
+  
+      try {
+          const id = amount._id;
+          let response = await axios.get(`${import.meta.env.VITE_API_URL}/booking/accept/${id}`,{
+            withCredentials : true
+          });
+          if(!response) {
+              setMessage(response.message);
+          }
+      } catch (error) {
+          setMessage(error.message);
+      }
+  
+  
+      const {data:keydata} = await axios.get(`${import.meta.env.VITE_API_URL}/api/payment/getkey`)
+      const {key} = keydata
+      console.log(key);
+      
+      const {data:orderdata} = await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/create-order`,{
+          amount:"500"
+      })
+      const {order} = orderdata
+  
+     
+      const options = {
+          key: key, 
+          amount: amount, 
+          currency: 'INR',
+          name: 'GigConnect',
+          description: 'Test Transaction',
+          order_id: order.id, 
+          callback_url: `${import.meta.env.VITE_API_URL}/api/payment/verification`,
+          prefill: {
+            name: 'Gaurav Kumar',
+            email: 'gaurav.kumar@example.com',
+            contact: '9999999999'
+          },
+          theme: {
+            color: '#F37254'
+          },
+        };
+  
+        const rzp = new Razorpay(options);
+        rzp.open();
+    }
 
   useEffect(() => {
     const fetchGig = async () => {
@@ -30,6 +77,7 @@ const GigsDetails = (prop) => {
 
     fetchGig();
   },[id]);
+
 
 
   const deleteGig = async () => {
@@ -116,7 +164,7 @@ const GigsDetails = (prop) => {
               <div className="mt-6 flex gap-4">
                 <button
                   className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
-                  onClick={() => alert("Apply functionality coming soon")}
+                  onClick={() => handleApply(gig)}
                 >
                   Apply for Gig
                 </button>

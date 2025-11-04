@@ -19,8 +19,24 @@ function ChattingPage({ user }) {
   const [message, setMessage] = useState("");
   const [chatList, setChatList] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
+  const [headName, setHeadName] = useState("Select Chat");
 
 
+  useEffect(() => {
+    const load = () => {
+      // alert(selectedChat)
+      if (selectedChat) {
+        axios.get(`${import.meta.env.VITE_API_URL}/chat/${selectedChat}`)
+        .then((res) => setMessages(res.data.messages))
+        .catch(console.error);
+      }
+    }
+    
+    load()
+  }, [selectedChat]);
+
+  console.log({messages})
+  
   async function listHandler() {
     try {
       const uid = localStorage.getItem("userId");
@@ -59,7 +75,7 @@ function ChattingPage({ user }) {
           `${import.meta.env.VITE_API_URL}/booking/all`,
           { withCredentials: true }
         );
-
+        console.log(data)
         const gigDet = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/gigs`,
           { withCredentials: true }
@@ -87,9 +103,6 @@ function ChattingPage({ user }) {
       }
   }
 
-
-
-
   
   useEffect(() => {
     if (user === "client") listHandler();
@@ -97,31 +110,47 @@ function ChattingPage({ user }) {
   }, [user]);
 
 
-  const joinRoom = (chat) => {
+  const joinRoom = (chat, chatting) => {
 
     if (!chat) {
       alert("Invalid bookingId for this chat");
       return;
     }
-
+    if(localStorage.getItem('userRole') === "freelancer"){
+      setHeadName(chatting.gigDetails.title)
+    }
+    else{
+      setHeadName(chatting.name)
+    }
+    
+    console.log(chatting)
     setSelectedChat(chat);
     setMessages([]); 
     socket.emit("join_room", chat); 
   };
 
-  const msgHandler = (msg) => {
+  const msgHandler = async (msg) => {
     if (!msg.trim() || !selectedChat) return;
 
     const senderId = localStorage.getItem("userId");
 
     const data = {
       bookingId: selectedChat,
-      senderId,
+      senderId : senderId,
       text: msg,
     };
 
+
+    const chatSave = await axios.post(`${import.meta.env.VITE_API_URL}/chat/send`,
+      {data},
+      {withCredentials : true}
+    )
+
+    console.log(chatSave+"save message from server");
+
+
     socket.emit("send_message", data);
-    console.log(data)
+
     setMessages((prev) => [...prev, { ...data, sender: "me" }]);
     setMessage("");
   };
@@ -156,7 +185,7 @@ function ChattingPage({ user }) {
             chatList.map((chat) => (
               <div
                 key={chat._id || chat.bookingId}
-                onClick={() => {joinRoom(chat._id), console.log(chat._id)}}
+                onClick={() => {joinRoom(chat._id, chat), console.log(chat._id)}}
                 className={`p-4 border-b cursor-pointer hover:bg-blue-100 ${
                   selectedChat && selectedChat._id === chat._id
                     ? "bg-blue-200"
@@ -177,7 +206,7 @@ function ChattingPage({ user }) {
       <div className="flex flex-col flex-1">
         <header className="border-b bg-blue-500 text-white h-16 flex items-center px-4">
           <div className="font-semibold">
-            {selectedChat ? selectedChat.name: "Select a Chat"}
+            {headName}
           </div>
         </header>
 
@@ -190,9 +219,9 @@ function ChattingPage({ user }) {
               <div
                 key={i}
                 className={`flex ${
-                  msg.sender === "me" ? "justify-end" : "justify-start"
+                  msg.senderId === localStorage.getItem('userId') ? "justify-end" : "justify-start"
                 }`}
-              >
+              >{console.log(msg.senderId)}
                 <div
                   style={{
                     ...messageStyle,
@@ -200,7 +229,7 @@ function ChattingPage({ user }) {
                       msg.sender === "me" ? "#DCF8C6" : "#FFF",
                   }}
                 >
-                  {msg.text}
+                  {msg.message || msg.text}
                 </div>
               </div>
             ))
