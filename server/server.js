@@ -37,7 +37,6 @@ socketHandler(io);
 
 app.use(express.json())
 app.use(cookieParser());
-app.use(cors());
 
 
 export const instance = new Razorpay({
