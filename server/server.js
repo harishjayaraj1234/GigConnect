@@ -27,7 +27,7 @@ connectDB()
 const server = createServer(app); 
 const io = new Server(server, {
     cors: {
-        origin : process.env.APPLICATION_URL,
+        origin : "https://localhost:5173",
         methods : ["GET", "POST"],
         credentials : true
     }
