@@ -60,3 +60,6 @@ app.use("/api/payment",paymentRouter)
 server.listen(port,()=>{
     console.log(`Server Stared on PORT:${port}`)
 })
+
+
+export default app
