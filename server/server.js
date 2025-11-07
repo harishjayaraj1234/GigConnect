@@ -27,7 +27,7 @@ connectDB()
 const server = createServer(app); 
 const io = new Server(server, {
     cors: {
-        origin : "http://localhost:5173",
+        origin : process.env.APPLICATION_URL,
         methods : ["GET", "POST"],
         credentials : true
     }
@@ -38,7 +38,7 @@ socketHandler(io);
 app.use(express.json())
 app.use(cookieParser());
 app.use(cors({
-  origin: "http://localhost:5173",  
+  origin: process.env.APPLICATION_URL,  
   methods: ['GET','POST','PUT','DELETE'],
   credentials: true               
 }));
@@ -52,7 +52,7 @@ export const instance = new Razorpay({
 
 
 // API EndPoints
-// app.get('/',(req,res)=>res.send("API Working"))
+app.get('/',(req,res)=>res.send("API Working"))
 app.use('/api/auth',authRouter)
 app.use('/api/user',userRouter)
 app.use('/api/gigs',gigsRouter)
