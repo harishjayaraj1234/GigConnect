@@ -27,7 +27,7 @@ connectDB()
 const server = createServer(app); 
 const io = new Server(server, {
     cors: {
-        origin : allowedOrigin,
+        origin : process.env.APPLICATION_URL,
         methods : ["GET", "POST"],
         credentials : true
     }
@@ -37,11 +37,7 @@ socketHandler(io);
 
 app.use(express.json())
 app.use(cookieParser());
-app.use(cors({
-  origin: allowedOrigin,  
-  methods: ['GET','POST','PUT','DELETE'],
-  credentials: true               
-}));
+app.use(cors());
 
 
 export const instance = new Razorpay({
