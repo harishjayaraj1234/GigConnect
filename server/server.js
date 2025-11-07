@@ -38,7 +38,7 @@ socketHandler(io);
 app.use(express.json())
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.APPLICATION_URL,  
+  origin: allowedOrigin,  
   methods: ['GET','POST','PUT','DELETE'],
   credentials: true               
 }));
