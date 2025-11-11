@@ -9,6 +9,7 @@ import authRouter from "./routes/authRoute.js"
 import userRouter from "./routes/userRoutes.js"
 import gigsRouter from "./routes/gigsRoutes.js"
 import reviewRouter from  "./routes/reviewRouter.js";
+import corsMiddleware from "./middleware/corsMiddleware.js";
 import bookingRouter from "./routes/bookingRouter.js";
 import socketHandler from "./socket/socketHandler.js"
 import Razorpay from "razorpay"
@@ -50,15 +51,15 @@ export const instance = new Razorpay({
 });
 
 
+app.use('/api/auth', corsMiddleware, authRouter);
+app.use('/api/user', corsMiddleware, userRouter);
+app.use('/api/gigs', corsMiddleware, gigsRouter);
+app.use('/booking', corsMiddleware, bookingRouter);
+app.use('/reviews', corsMiddleware, reviewRouter);
+app.use('/chat', corsMiddleware, chatRoutes);
+app.use('/api/wallet', corsMiddleware, walletRouter);
+app.use('/api/payment', corsMiddleware, paymentRouter);
 
-app.use('/api/auth',authRouter)
-app.use('/api/user',userRouter)
-app.use('/api/gigs',gigsRouter)
-app.use('/booking', bookingRouter);
-app.use('/reviews', reviewRouter)
-app.use("/chat", chatRoutes);
-app.use("/api/wallet", walletRouter);
-app.use("/api/payment",paymentRouter)
 
 server.listen(port,()=>{
     console.log(`Server Stared on PORT:${port}`)
