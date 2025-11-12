@@ -2,7 +2,7 @@
 import cors from "cors";
 
 const corsOptions = {
-  origin: ["https://gig-connect-client.vercel.app"],
+  origin: ["http://gig-connect-client.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
@@ -10,6 +10,7 @@ const corsOptions = {
 const corsMiddleware = cors(corsOptions);
 
 export default corsMiddleware;
+
 
 
 
