@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+
 import Login from "./pages/Auth/login.jsx";
+
 import Register from "./pages/Auth/Register";
 import IdVerify from "./pages/Auth/IdVerify";
 import ForgotPassword from "./pages/Auth/ForgotPassword";

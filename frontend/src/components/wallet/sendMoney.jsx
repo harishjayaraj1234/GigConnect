@@ -14,7 +14,7 @@ const SendMoney = ({onSend}) => {
         setReceiver("")
     }
 
-  return (
+
     <form onSubmit={handleSubmit} className='mb-6'>
         <label className='block mb-2 text-gray-700 font-medium'>
             Receiver (Freelancer Email or ID)

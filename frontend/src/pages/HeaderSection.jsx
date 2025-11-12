@@ -1,5 +1,6 @@
 import React from 'react'
 import Login from './Auth/Login.jsx'
+import Login from './Auth/login.jsx'
 import OverView from './OverviewSection'
 
 const Header = () => {
