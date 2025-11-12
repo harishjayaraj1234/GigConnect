@@ -28,7 +28,7 @@ connectDB()
 const server = createServer(app); 
 const io = new Server(server, {
     cors: {
-        origin : ["https://gig-connect-client.vercel.app"],
+        origin : ["http://gig-connect-client.vercel.app"],
         methods : ["GET", "POST"],
         credentials : true
     }
@@ -39,7 +39,7 @@ socketHandler(io);
 app.use(express.json())
 app.use(cookieParser());
 app.use(cors({
-  origin: "https://gig-connect-client.vercel.app",  
+  origin: "http://gig-connect-client.vercel.app",  
   methods: ['GET','POST','PUT','DELETE'],
   credentials: true               
 }));
