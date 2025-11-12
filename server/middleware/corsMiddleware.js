@@ -2,7 +2,7 @@
 import cors from "cors";
 
 const corsOptions = {
-  origin: ["https://gigconnect-ten.vercel.app"],
+  origin: process.env.CLIENT_URL,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
@@ -10,3 +10,4 @@ const corsOptions = {
 const corsMiddleware = cors(corsOptions);
 
 export default corsMiddleware;
+
